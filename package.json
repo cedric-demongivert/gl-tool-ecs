@@ -1,11 +1,11 @@
 {
   "name": "@cedric-demongivert/gl-tool-ecs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Entity component system of the gl-tool suit.",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "doc": "esdoc",
+    "doc": "typedoc",
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "preversion": "npm install && npm test",
