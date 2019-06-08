@@ -1,0 +1,205 @@
+import { IdentifierSet } from '../src/ts'
+
+function printSize (value : number) : string {
+  if (Math.abs(value) > 1000000000) {
+    return `${(value / 100000000).toFixed(3)}go`
+  } else if (Math.abs(value) > 1000000) {
+    return `${(value / 100000).toFixed(3)}mo`
+  } else if (Math.abs(value) > 1000) {
+    return `${(value / 1000).toFixed(3)}ko`
+  } else {
+    return `${value}o`
+  }
+}
+
+function * range (limit : number) : Iterable<number> {
+  for (let index = 0; index < limit; ++index) yield index
+}
+
+function sum (a : number, b : number) : number { return a + b }
+
+function nothing () : void {}
+
+function heapDelta (callback) : number {
+  const base = process.memoryUsage()
+  callback()
+  const next = process.memoryUsage()
+  return next.heapUsed - base.heapUsed - 150 + next.external - base.external
+}
+
+function averageDelta (callback) : number {
+  return [...range(200)].map(_ => heapDelta(callback)).reduce(sum) / 200
+}
+
+describe('preformance', function () {
+  it('perform compact size', function () {
+    function allocateSet (size) : void {
+      const set = new Set<number>()
+      for (let index = 0; index < size; ++index) set.add(index)
+    }
+
+    function allocateIdentifierSet (size) : void {
+      const set = new IdentifierSet(size)
+      for (let index = 0; index < size; ++index) set.add(index)
+    }
+
+    let lines : string[] = []
+
+    function cell (text : string) : string {
+      return text.padEnd(15)
+    }
+
+    lines.push(['entities', 'setSize', 'bitSetSize'].map(cell).join(' '))
+
+    const setResults : number[] = [...range(10)].map(x => x * 100).map(index => averageDelta(_ => allocateSet(index)))
+    const identifierResults : number[] = [...range(10)].map(x => x * 100).map(index => averageDelta(_ => allocateIdentifierSet(index)))
+
+    for (let index = 0; index < 10; ++index) {
+      lines.push([
+        (index * 100).toString(),
+        printSize(setResults[index]),
+        printSize(identifierResults[index])
+      ].map(cell).join(' '))
+    }
+
+    console.log(lines.join('\n'))
+  })
+
+  /*
+  it('perform wide size', function () {
+    function allocateSet (size) : void {
+      const set = new Set<number>()
+      for (let index = 0; index < size; ++index) set.add(((index * 7 * 5) % 113) * 23 + index * 4)
+    }
+
+    function allocateIdentifierSet (size) : void {
+      const set = new IdentifierSet()
+      for (let index = 0; index < size; ++index) set.add(((index * 7 * 5) % 113) * 23 + index * 4)
+    }
+
+    let lines : string[] = []
+
+    function cell (text : string) : string {
+      return text.padEnd(15)
+    }
+
+    lines.push(['entities', 'setSize', 'bitSetSize'].map(cell).join(' '))
+
+    const setResults : number[] = [...range(1000)].map(index => averageDelta(_ => allocateSet(index)))
+    const bitSetResults : number[] = [...range(1000)].map(index => averageDelta(_ => allocateIdentifierSet(index)))
+
+    for (let index = 0; index < 1000; ++index) {
+      lines.push([
+        index.toString(),
+        printSize(setResults[index]),
+        printSize(bitSetResults[index])
+      ].map(cell).join(' '))
+    }
+
+    console.log(lines.join('\n'))
+  })*/
+
+  it('access', function () {
+    const set : Set<number> = new Set<number>()
+    const bitset : IdentifierSet = new IdentifierSet(20000000)
+
+    const values : number[] = [...range(10000000)].map(x => (Math.random() * 10000000) << 0)
+
+    console.time('setInitialization')
+    for (const value of values) set.add(value)
+    console.timeEnd('setInitialization')
+
+    console.time('identifierSetInitialization')
+    for (const value of values) bitset.add(value)
+    console.timeEnd('identifierSetInitialization')
+
+    console.time('setAccess')
+    for (const value of set);
+    console.timeEnd('setAccess')
+
+    console.time('identifierSetIteratorAccess')
+    for (const value of bitset);
+    console.timeEnd('identifierSetIteratorAccess')
+
+    console.time('identifierSetRandomAccess')
+    for (let index = 0, length = bitset.size; index < length; ++index) bitset.get(index)
+    console.timeEnd('identifierSetRandomAccess')
+
+    console.time('setAssert')
+    for (const value of values) set.has(value)
+    console.timeEnd('setAssert')
+
+    console.time('identifierSetAssert')
+    for (const value of values) bitset.has(value)
+    console.timeEnd('identifierSetAssert')
+
+    console.time('setDeletion')
+    for (const value of values) set.delete(value)
+    console.timeEnd('setDeletion')
+
+    console.time('identifierSetDeletion')
+    for (const value of values) bitset.delete(value)
+    console.timeEnd('identifierSetDeletion')
+  })
+})
+
+
+/*
+function getSetHeapData (size) {
+  const datas : number[] = []
+  datas.length = size + 1
+
+  heapDelta()
+  const entities : Set<number> = new Set<number>()
+  datas[0] = heapDelta()
+
+  for (let index = 0; index < size; ++index) {
+    heapDelta()
+    entities.add(index)
+    datas[index + 1] = heapDelta()
+  }
+
+  return datas
+}
+
+function getIdentifierSetHeapData (size) {
+  const datas : number[] = []
+  datas.length = size + 1
+
+  heapDelta()
+  const entities : IdentifierSet = new IdentifierSet()
+  datas[0] = heapDelta()
+
+  for (let index = 0; index < size; ++index) {
+    heapDelta()
+    entities.add(index)
+    datas[index + 1] = heapDelta()
+  }
+
+  return datas
+}
+
+describe('Performance', function () {
+  it('describe memory usage', function () {
+    for (let index = 0; index < 100; ++index) {
+      console.log(heapDelta())
+    }
+
+    const lines : string[] = []
+    const setData : number[] = getSetHeapData(2000)
+    const bitSetData : number[] = getIdentifierSetHeapData(2000)
+    const cell : number = 15
+
+    lines.push(`${'entities'.padStart(cell)} ${'set_size'.padStart(cell)} ${'set_delta'.padStart(cell)} ${'bit_set_size'.padStart(cell)} ${'bit_set_delta'.padStart(cell)}`)
+
+    let set_sum : number = 0
+    let bit_set_sum : number = 0
+    for (let index = 0; index < setData.length; ++index) {
+      set_sum += setData[index]
+      bit_set_sum += bitSetData[index]
+      lines.push(`${index.toString().padStart(cell)} ${printSize(set_sum).padStart(cell)} ${printSize(setData[index]).padStart(cell)} ${printSize(bit_set_sum).padStart(cell)} ${printSize(bitSetData[index]).padStart(cell)}`)
+    }
+
+    console.log(lines.join('\n'))
+  })*/
+//})

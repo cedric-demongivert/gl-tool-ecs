@@ -1,0 +1,28 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env", {
+        "targets": "> 0.25%, ie 11"
+      }
+    ],
+    "@babel/typescript"
+  ],
+  "plugins": [
+    [
+      "@babel/plugin-proposal-decorators", {
+        "legacy": true
+      }
+    ],
+    [
+      "module-resolver", {
+        "root": ["."],
+        "alias": {
+          "@library": "./src"
+        },
+        "extensions": [
+          ".ts", ".js", ".json", ".jsx", ".tsx"
+        ]
+      }
+    ]
+  ]
+}
