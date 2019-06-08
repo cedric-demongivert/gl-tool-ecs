@@ -1,4 +1,4 @@
-import { Collection, View, BufferedNumberSet, Cursor } from '../Collection'
+import { Collection, View, BufferedNumberSet, Cursor } from '../collection'
 import { ComponentRepository } from './ComponentRepository'
 
 export class StaticComponentRepository implements ComponentRepository {
