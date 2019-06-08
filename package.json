@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-ecs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Entity component system of the gl-tool suit.",
   "main": "index.js",
   "scripts": {

@@ -1,7 +1,7 @@
 import { TypeHandler } from './TypeHandler'
 import { Collection } from '../collection'
 
-export interface TypeRepository implements Collection<number> {
+export interface TypeRepository extends Collection<number> {
   /**
   * @return true if this instance is a type repository.
   */

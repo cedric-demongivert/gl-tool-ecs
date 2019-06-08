@@ -1,23 +1,23 @@
-import { ComponentHandler } from './ComponentHandler'
+import { TypeHandler } from './TypeHandler'
 
 export class ComponentTypeManager {
-  private _types : Set<ComponentHandler>
-  private _dependencies : Map<ComponentHandler, Set<ComponentHandler>>
+  private _types : Set<TypeHandler>
+  private _dependencies : Map<TypeHandler, Set<TypeHandler>>
 
   public ComponentTypeManager () {
-    this._types = new Set<ComponentHandler>()
-    this._dependencies = new Map<ComponentHandler, Set<ComponentHandler>>()
+    this._types = new Set<TypeHandler>()
+    this._dependencies = new Map<TypeHandler, Set<TypeHandler>>()
   }
 
-  public component (dependencies : ComponentHandler[] = []) {
-    return (factory : ComponentHandler) => {
+  public component (dependencies : TypeHandler[] = []) {
+    return (factory : TypeHandler) => {
       this._types.add(factory)
 
       if (!this._dependencies.has(factory)) {
-        this._dependencies.set(factory, new Set<ComponentHandler>())
+        this._dependencies.set(factory, new Set<TypeHandler>())
       }
 
-      const dependencySet : Set<ComponentHandler> = this._dependencies.get(
+      const dependencySet : Set<TypeHandler> = this._dependencies.get(
         factory
       )
 
@@ -25,7 +25,7 @@ export class ComponentTypeManager {
     }
   }
 
-  public * dependencies (factory : ComponentHandler) {
+  public * dependencies (factory : TypeHandler) {
     yield * this._dependencies.get(factory)
   }
 
