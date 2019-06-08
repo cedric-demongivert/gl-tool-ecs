@@ -1,4 +1,4 @@
-import { Collection } from '../Collection'
+import { Collection } from '../collection'
 
 export interface ComponentRepository extends Collection<number> {
   /**
