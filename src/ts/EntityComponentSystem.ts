@@ -856,6 +856,10 @@ export class EntityComponentSystem {
     return this.getInstanceOfComponent(this.getComponent(entity, handler))
   }
 
+  public getEntityOfInstance (instance : any) : number {
+    return this.getEntityOfComponent(this.getComponentOfInstance(instance))
+  }
+
   /**
   * Return the identifier of a component instance.
   *
