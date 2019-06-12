@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-ecs",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Entity component system of the gl-tool suit.",
   "main": "index.js",
   "browserslist": "> 0.25%, not dead",
