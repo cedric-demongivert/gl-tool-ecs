@@ -12,6 +12,7 @@ mix.ts('src/ts/index.ts', 'dist')
    .copy('LICENSE.md', 'dist')
    .copy('package.json', 'dist')
    .copy('README.md', 'dist')
+   .setPublicPath('dist')
    .disableNotifications()
    .webpackConfig({
      'externals': externals,
