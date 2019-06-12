@@ -9,6 +9,7 @@ for (const name in pckg.dependencies) {
 }
 
 mix.ts('src/ts/index.ts', 'dist')
+   .babel(['dist/index.js'], 'dist/index.js')
    .copy('LICENSE.md', 'dist')
    .copy('package.json', 'dist')
    .copy('README.md', 'dist')
