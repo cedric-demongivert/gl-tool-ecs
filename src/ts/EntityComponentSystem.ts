@@ -1077,7 +1077,7 @@ export class EntityComponentSystem {
     const systems : Array<System> = this._systems
 
     for (let index = 0, size = systems.length; index < size; ++index) {
-      const system : System = this._systems
+      const system : System = this._systems[index]
 
       if (system instanceof type) {
         return system
