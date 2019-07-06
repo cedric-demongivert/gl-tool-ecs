@@ -1047,6 +1047,47 @@ export class EntityComponentSystem {
   }
 
   /**
+  * Require a system of a given type.
+  *
+  * @param type - The type of system to return.
+  *
+  * @return The first system of the given type or fail.
+  */
+  public requireSystem (type : any) : System {
+    const result : System = this.firstSystem(type)
+
+    if (result == null) {
+      throw new Error([
+        'No system of type ', type.name, ' found in this entity-component ',
+        'system.'
+      ].join(''))
+    } else {
+      return result
+    }
+  }
+
+  /**
+  * Find the first system of a given type.
+  *
+  * @param type - The type of system to return.
+  *
+  * @return The first system of the given type or null.
+  */
+  public firstSystem (type : any) : System {
+    const systems : Array<System> = this._systems
+
+    for (let index = 0, size = systems.length; index < size; ++index) {
+      const system : System = this._systems
+
+      if (system instanceof type) {
+        return system
+      }
+    }
+
+    return null
+  }
+
+  /**
   * Delete a system from this entity-component-system.
   *
   * @param system - A system to delete from this entity-component-system.
