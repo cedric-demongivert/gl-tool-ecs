@@ -1,16 +1,15 @@
 /** eslint-env jest */
 
-import {
-  EntityComponentSystemBuilder
-} from '../src/ts/EntityComponentSystemBuilder'
+import { Sequence } from '@cedric-demongivert/gl-tool-collection'
 
-import { EntityComponentSystem } from '../src/ts/EntityComponentSystem'
-import { System } from '../src/ts/systems/System'
-import { TypeHandler } from '../src/ts/types/TypeHandler'
-import { Collection } from '../src/ts/collection/Collection'
+import { EntityComponentSystemBuilder} from '../sources/EntityComponentSystemBuilder'
+
+import { EntityComponentSystem } from '../sources/EntityComponentSystem'
+import { System } from '../sources/System'
+import { ComponentType } from '../sources/ComponentType'
 
 import { createSystem } from './mocks/createSystem'
-import { createTypeHandler } from './mocks/createTypeHandler'
+import { createComponentType } from './mocks/createComponentType'
 
 describe('EntityComponentSystem', function () {
   describe('#constructor', function () {
@@ -87,7 +86,7 @@ describe('EntityComponentSystem', function () {
       expect(new Set(ecs.entities)).toEqual(existingEntities)
     })
 
-    it('can reallocated previously deleted entities', function () {
+    it('can reallocate previously deleted entities', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
       const existingEntities : Set<number> = new Set<number>()
 
@@ -176,7 +175,7 @@ describe('EntityComponentSystem', function () {
     })
   })
 
-  describe('#hasEntity', function () {
+  describe('#entities.has', function () {
     it('returns true if this entity-component-system contains the given entity', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
 
@@ -184,9 +183,9 @@ describe('EntityComponentSystem', function () {
       ecs.addEntity(5)
       ecs.addEntity(12)
 
-      expect(ecs.hasEntity(26)).toBeTruthy()
-      expect(ecs.hasEntity(5)).toBeTruthy()
-      expect(ecs.hasEntity(12)).toBeTruthy()
+      expect(ecs.entities.has(26)).toBeTruthy()
+      expect(ecs.entities.has(5)).toBeTruthy()
+      expect(ecs.entities.has(12)).toBeTruthy()
     })
 
     it('returns true if this entity-component-system contains the given entity', function () {
@@ -196,9 +195,9 @@ describe('EntityComponentSystem', function () {
       ecs.addEntity(5)
       ecs.addEntity(12)
 
-      expect(ecs.hasEntity(32)).toBeFalsy()
-      expect(ecs.hasEntity(14)).toBeFalsy()
-      expect(ecs.hasEntity(4)).toBeFalsy()
+      expect(ecs.entities.has(32)).toBeFalsy()
+      expect(ecs.entities.has(14)).toBeFalsy()
+      expect(ecs.entities.has(4)).toBeFalsy()
     })
   })
 
@@ -264,44 +263,27 @@ describe('EntityComponentSystem', function () {
 
     it('remove entity components', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : TypeHandler = createTypeHandler()
-      const ComponentTypeB : TypeHandler = createTypeHandler()
-      const ComponentTypeC : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
+      const ComponentTypeB : ComponentType<any> = createComponentType()
+      const ComponentTypeC : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentTypeA)
-      ecs.createType(ComponentTypeB)
-      ecs.createType(ComponentTypeC)
+      ecs.addType(ComponentTypeA)
+      ecs.addType(ComponentTypeB)
+      ecs.addType(ComponentTypeC)
       ecs.addEntity(23)
       ecs.addEntity(12)
 
-      const a12 : number = ecs.createComponent(12, ComponentTypeA)
-      const b12 : number = ecs.createComponent(12, ComponentTypeB)
-      const c12 : number = ecs.createComponent(12, ComponentTypeC)
-      const a23 : number = ecs.createComponent(23, ComponentTypeB)
+      const a12 : any = ecs.createComponent(12, ComponentTypeA)
+      const b12 : any = ecs.createComponent(12, ComponentTypeB)
+      const c12 : any = ecs.createComponent(12, ComponentTypeC)
+      const a23 : any = ecs.createComponent(23, ComponentTypeB)
       const b23 : number = ecs.createComponent(23, ComponentTypeC)
 
-      expect(new Set(ecs.components)).toEqual(
-        new Set([a12, b12, c12, a23, b23])
-      )
+      expect(new Set(ecs.components)).toEqual(new Set([a12, b12, c12, a23, b23]))
 
       ecs.deleteEntity(12)
 
-      expect(new Set(ecs.components)).toEqual(
-        new Set([a23, b23])
-      )
-    })
-
-    it('move back the entity cursor if necessary', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      for (let index = 0; index < 20; ++index) {
-        ecs.createEntity()
-      }
-
-      const deleted : number = ecs.entities.get(5)
-      ecs.deleteEntity(deleted)
-
-      expect(ecs.createEntity()).toBe(deleted)
+      expect(new Set(ecs.components)).toEqual(new Set([b23, a23]))
     })
   })
 
@@ -316,8 +298,8 @@ describe('EntityComponentSystem', function () {
       ecs.addTag(12)
       ecs.addTag(5)
 
-      const entitiesWithTag12 : Collection<number> = ecs.getEntitiesWithTag(12)
-      const entitiesWithTag5 : Collection<number> = ecs.getEntitiesWithTag(5)
+      const entitiesWithTag12 : Sequence<number> = ecs.getEntitiesWithTag(12)
+      const entitiesWithTag5 : Sequence<number> = ecs.getEntitiesWithTag(5)
 
       ecs.attachTagToEntity(5, 25)
       ecs.attachTagToEntity(5, 13)
@@ -332,65 +314,21 @@ describe('EntityComponentSystem', function () {
   describe('#getEntitiesWithType', function () {
     it('return a view over all entities with a component of a given type', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : TypeHandler = createTypeHandler()
-      const ComponentTypeB : TypeHandler = createTypeHandler()
-      const ComponentTypeC : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
+      const ComponentTypeB : ComponentType<any> = createComponentType()
+      const ComponentTypeC : ComponentType<any> = createComponentType()
 
       ecs.addEntity(25)
       ecs.addEntity(21)
       ecs.addEntity(13)
 
-      ecs.createType(ComponentTypeA)
-      ecs.createType(ComponentTypeB)
-      ecs.createType(ComponentTypeC)
+      ecs.addType(ComponentTypeA)
+      ecs.addType(ComponentTypeB)
+      ecs.addType(ComponentTypeC)
 
-      const entitiesWithTypeA : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeA)
-      )
-      const entitiesWithTypeB : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeB)
-      )
-      const entitiesWithTypeC : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeC)
-      )
-
-      ecs.createComponent(25, ComponentTypeA)
-      ecs.createComponent(21, ComponentTypeA)
-      ecs.createComponent(21, ComponentTypeB)
-      ecs.createComponent(21, ComponentTypeC)
-      ecs.createComponent(13, ComponentTypeA)
-      ecs.createComponent(13, ComponentTypeC)
-
-      expect(new Set(entitiesWithTypeA)).toEqual(new Set([21, 25, 13]))
-      expect(new Set(entitiesWithTypeB)).toEqual(new Set([21]))
-      expect(new Set(entitiesWithTypeC)).toEqual(new Set([13, 21]))
-    })
-  })
-
-  describe('#getEntitiesWithTypeIdentifier', function () {
-    it('return a view over all entities with a component of a given type', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : TypeHandler = createTypeHandler()
-      const ComponentTypeB : TypeHandler = createTypeHandler()
-      const ComponentTypeC : TypeHandler = createTypeHandler()
-
-      ecs.addEntity(25)
-      ecs.addEntity(21)
-      ecs.addEntity(13)
-
-      const typeA : number = ecs.createType(ComponentTypeA)
-      const typeB : number = ecs.createType(ComponentTypeB)
-      const typeC : number = ecs.createType(ComponentTypeC)
-
-      const entitiesWithTypeA : Collection<number> = (
-        ecs.getEntitiesWithTypeIdentifier(typeA)
-      )
-      const entitiesWithTypeB : Collection<number> = (
-        ecs.getEntitiesWithTypeIdentifier(typeB)
-      )
-      const entitiesWithTypeC : Collection<number> = (
-        ecs.getEntitiesWithTypeIdentifier(typeC)
-      )
+      const entitiesWithTypeA : Sequence<number> = ecs.getEntitiesWithType(ComponentTypeA)
+      const entitiesWithTypeB : Sequence<number> = ecs.getEntitiesWithType(ComponentTypeB)
+      const entitiesWithTypeC : Sequence<number> = ecs.getEntitiesWithType(ComponentTypeC)
 
       ecs.createComponent(25, ComponentTypeA)
       ecs.createComponent(21, ComponentTypeA)
@@ -562,7 +500,7 @@ describe('EntityComponentSystem', function () {
     })
   })
 
-  describe('#hasTag', function () {
+  describe('#tags.has', function () {
     it('returns true if this entity-component-system contains the given entity', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
 
@@ -570,9 +508,9 @@ describe('EntityComponentSystem', function () {
       ecs.addTag(5)
       ecs.addTag(12)
 
-      expect(ecs.hasTag(26)).toBeTruthy()
-      expect(ecs.hasTag(5)).toBeTruthy()
-      expect(ecs.hasTag(12)).toBeTruthy()
+      expect(ecs.tags.has(26)).toBeTruthy()
+      expect(ecs.tags.has(5)).toBeTruthy()
+      expect(ecs.tags.has(12)).toBeTruthy()
     })
 
     it('returns true if this entity-component-system contains the given tag', function () {
@@ -582,9 +520,9 @@ describe('EntityComponentSystem', function () {
       ecs.addTag(5)
       ecs.addTag(12)
 
-      expect(ecs.hasTag(32)).toBeFalsy()
-      expect(ecs.hasTag(14)).toBeFalsy()
-      expect(ecs.hasTag(4)).toBeFalsy()
+      expect(ecs.tags.has(32)).toBeFalsy()
+      expect(ecs.tags.has(14)).toBeFalsy()
+      expect(ecs.tags.has(4)).toBeFalsy()
     })
   })
 
@@ -646,19 +584,6 @@ describe('EntityComponentSystem', function () {
 
       expect(new Set(ecs.getEntitiesWithTag(12))).toEqual(new Set())
       expect(new Set(ecs.getEntitiesWithTag(3))).toEqual(new Set([12]))
-    })
-
-    it('move back the tag cursor if necessary', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      for (let index = 0; index < 20; ++index) {
-        ecs.createTag()
-      }
-
-      const deleted : number = ecs.tags.get(5)
-      ecs.deleteTag(deleted)
-
-      expect(ecs.createTag()).toBe(deleted)
     })
   })
 
@@ -966,14 +891,14 @@ describe('EntityComponentSystem', function () {
     })
   })
 
-  describe('#createType', function () {
-    it('create a type from an handler and return it', function () {
+  describe('#addType', function () {
+    it('create a type from an type and return it', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const handler : TypeHandler = createTypeHandler()
+      const type : ComponentType<any> = createComponentType()
 
       expect(new Set(ecs.types)).toEqual(new Set())
 
-      const type : number = ecs.createType(handler)
+      ecs.addType(type)
 
       expect(new Set(ecs.types)).toEqual(new Set([type]))
     })
@@ -983,67 +908,37 @@ describe('EntityComponentSystem', function () {
 
       expect(new Set(ecs.types)).toEqual(new Set())
 
-      const types : Set<number> = new Set<number>()
+      const types : Set<ComponentType<any>> = new Set<ComponentType<any>>()
 
       for (let index = 0; index < 10; ++index) {
-        types.add(ecs.createType(createTypeHandler()))
+        const type : ComponentType<any> = createComponentType()
+
+        types.add(type)
+        ecs.addType(type)
       }
 
       expect(types.size).toBe(10)
       expect(new Set(ecs.types)).toEqual(types)
     })
 
-    it('throw an error if you trying to create two types with the same handler', function () {
+    it('throw an error if you add the same type twice', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const handler : TypeHandler = createTypeHandler()
+      const type : ComponentType<any> = createComponentType()
 
-      ecs.createType(handler)
+      ecs.addType(type)
 
-      expect(_ => ecs.createType(handler)).toThrow()
-    })
-
-    it('does not recreate existing types', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const existingTypes : Set<number> = new Set<number>(
-        [5, 2, 1, 18, 17, 11]
-      )
-
-      for (const type of existingTypes) {
-        ecs.setType(type, createTypeHandler())
-      }
-
-      expect(new Set(ecs.types)).toEqual(existingTypes)
-
-      for (let index = 0; index < 14; ++index) {
-        existingTypes.add(ecs.createType(createTypeHandler()))
-      }
-
-      expect(existingTypes.size).toBe(20)
-      expect(new Set(ecs.types)).toEqual(existingTypes)
-    })
-
-    it('can reallocate previously deleted types', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const existingTypes : Set<number> = new Set<number>()
-
-      for (let index = 0; index < 20; ++index) {
-        existingTypes.add(ecs.createType(createTypeHandler()))
-      }
-
-      ecs.deleteType(ecs.getHandlerOfType(ecs.types.get(10)))
-      ecs.createType(createTypeHandler())
-
-      expect(new Set(ecs.types)).toEqual(existingTypes)
+      expect(_ => ecs.addType(type)).toThrow()
     })
 
     it('do inform underlying systems of the creation', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
       const system : System = createSystem()
+      const type : ComponentType<any> = createComponentType()
 
       ecs.addSystem(system)
 
-      const type : number = ecs.createType(createTypeHandler())
-      ecs.deleteType(ecs.getHandlerOfType(type))
+      ecs.addType(type)
+      ecs.deleteType(type)
 
       expect(system.managerWillAddType).toHaveBeenCalledWith(type)
       expect(system.managerDidAddType).toHaveBeenCalledWith(type)
@@ -1053,181 +948,109 @@ describe('EntityComponentSystem', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
 
       for (let index = 0; index < ecs.capacity.types; ++index) {
-        ecs.createType(createTypeHandler())
+        ecs.addType(createComponentType())
       }
 
-      expect(_ => ecs.createType(createTypeHandler())).toThrow()
+      expect(_ => ecs.addType(createComponentType())).toThrow()
     })
   })
 
-  describe('#setType', function () {
-    it('register a given type into the entity-component-system', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      expect(new Set(ecs.types)).toEqual(new Set())
-
-      ecs.setType(26, createTypeHandler())
-
-      expect(new Set(ecs.types)).toEqual(new Set([26]))
-    })
-
-    it('allows to create multiple types', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      expect(new Set(ecs.types)).toEqual(new Set())
-
-      const types : Set<number> = new Set([1, 32, 89, 65, 42])
-
-      for (const type of types) {
-        ecs.setType(type, createTypeHandler())
-      }
-
-      expect(new Set(ecs.types)).toEqual(types)
-    })
-
-    it('do inform underlying systems of the creation', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const system : System = createSystem()
-
-      ecs.addSystem(system)
-
-      ecs.setType(32, createTypeHandler())
-
-      expect(system.managerWillAddType).toHaveBeenCalledWith(32)
-      expect(system.managerDidAddType).toHaveBeenCalledWith(32)
-    })
-
-    it('throw an error if you trying to add an existing type', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      ecs.setType(25, createTypeHandler())
-
-      expect(_ => ecs.setType(25, createTypeHandler())).toThrow()
-    })
-
-    it('throw an error if you trying to add two types with the same handler', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const handler : TypeHandler = createTypeHandler()
-
-      ecs.setType(25, handler)
-
-      expect(_ => ecs.setType(30, handler)).toThrow()
-    })
-
-    it('throw an error if you trying to add a type beyond the capacity of the entity-component-system', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      expect(
-        _ => ecs.setType(ecs.capacity.types, createTypeHandler())
-      ).toThrow()
-    })
-  })
-
-  describe('#hasType', function () {
+  describe('#types.has', function () {
     it('returns true if this entity-component-system contains the given type', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
+      const typeA : ComponentType<any> = createComponentType()
+      const typeB : ComponentType<any> = createComponentType()
+      const typeC : ComponentType<any> = createComponentType()
 
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
+      ecs.addType(typeA)
+      ecs.addType(typeB)
+      ecs.addType(typeC)
 
-      expect(ecs.hasType(26)).toBeTruthy()
-      expect(ecs.hasType(5)).toBeTruthy()
-      expect(ecs.hasType(12)).toBeTruthy()
+      expect(ecs.types.has(typeA)).toBeTruthy()
+      expect(ecs.types.has(typeB)).toBeTruthy()
+      expect(ecs.types.has(typeC)).toBeTruthy()
     })
 
     it('returns true if this entity-component-system contains the given type', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
+      const typeA : ComponentType<any> = createComponentType()
+      const typeB : ComponentType<any> = createComponentType()
+      const typeC : ComponentType<any> = createComponentType()
 
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
+      ecs.addType(typeA)
+      ecs.addType(typeB)
+      ecs.addType(typeC)
 
-      expect(ecs.hasType(32)).toBeFalsy()
-      expect(ecs.hasType(14)).toBeFalsy()
-      expect(ecs.hasType(4)).toBeFalsy()
-    })
-  })
-
-  describe('#hasHandler', function () {
-    it('returns true if this entity-component-system contains the given handler', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
-
-      expect(ecs.hasHandler(ecs.getHandlerOfType(26))).toBeTruthy()
-      expect(ecs.hasHandler(ecs.getHandlerOfType(5))).toBeTruthy()
-      expect(ecs.hasHandler(ecs.getHandlerOfType(12))).toBeTruthy()
-    })
-
-    it('returns true if this entity-component-system contains the given handler', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
-
-      expect(ecs.hasHandler(createTypeHandler())).toBeFalsy()
-      expect(ecs.hasHandler(createTypeHandler())).toBeFalsy()
-      expect(ecs.hasHandler(createTypeHandler())).toBeFalsy()
+      expect(ecs.types.has(createComponentType())).toBeFalsy()
+      expect(ecs.types.has(createComponentType())).toBeFalsy()
+      expect(ecs.types.has(createComponentType())).toBeFalsy()
     })
   })
 
   describe('#deleteType', function () {
     it('remove a type from the ecs', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
+      const typeA : ComponentType<any> = createComponentType()
+      const typeB : ComponentType<any> = createComponentType()
+      const typeC : ComponentType<any> = createComponentType()
 
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
+      ecs.addType(typeA)
+      ecs.addType(typeB)
+      ecs.addType(typeC)
 
-      expect(new Set(ecs.types)).toEqual(new Set([26, 5, 12]))
+      expect(new Set(ecs.types)).toEqual(new Set([typeA, typeB, typeC]))
 
-      ecs.deleteType(ecs.getHandlerOfType(5))
+      ecs.deleteType(typeA)
 
-      expect(new Set(ecs.types)).toEqual(new Set([26, 12]))
+      expect(new Set(ecs.types)).toEqual(new Set([typeB, typeC]))
     })
 
     it('throw an error if you trying to remove a type that does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
+      const typeA : ComponentType<any> = createComponentType()
+      const typeB : ComponentType<any> = createComponentType()
+      const typeC : ComponentType<any> = createComponentType()
 
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
+      ecs.addType(typeA)
+      ecs.addType(typeB)
+      ecs.addType(typeC)
 
-      expect(_ => ecs.deleteType(createTypeHandler())).toThrow()
+      expect(_ => ecs.deleteType(createComponentType())).toThrow()
     })
 
     it('inform underlying systems of the deletion', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
       const system : System = createSystem()
 
+      const typeA : ComponentType<any> = createComponentType()
+      const typeB : ComponentType<any> = createComponentType()
+      const typeC : ComponentType<any> = createComponentType()
+
       ecs.addSystem(system)
 
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
-      ecs.deleteType(ecs.getHandlerOfType(5))
+      ecs.addType(typeA)
+      ecs.addType(typeB)
+      ecs.addType(typeC)
 
-      expect(system.managerWillDeleteType).toHaveBeenCalledWith(5)
-      expect(system.managerDidDeleteType).toHaveBeenCalledWith(5)
+      ecs.deleteType(typeB)
+
+      expect(system.managerWillDeleteType).toHaveBeenCalledWith(typeB)
+      expect(system.managerDidDeleteType).toHaveBeenCalledWith(typeB)
     })
 
     it('remove all components of the given type', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : TypeHandler = createTypeHandler()
-      const ComponentTypeB : TypeHandler = createTypeHandler()
-      const ComponentTypeC : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
+      const ComponentTypeB : ComponentType<any> = createComponentType()
+      const ComponentTypeC : ComponentType<any> = createComponentType()
 
       ecs.addEntity(25)
       ecs.addEntity(21)
       ecs.addEntity(13)
 
-      ecs.createType(ComponentTypeA)
-      ecs.createType(ComponentTypeB)
-      ecs.createType(ComponentTypeC)
+      ecs.addType(ComponentTypeA)
+      ecs.addType(ComponentTypeB)
+      ecs.addType(ComponentTypeC)
 
       ecs.createComponent(25, ComponentTypeA)
       ecs.createComponent(21, ComponentTypeA)
@@ -1236,15 +1059,9 @@ describe('EntityComponentSystem', function () {
       ecs.createComponent(13, ComponentTypeA)
       ecs.createComponent(13, ComponentTypeC)
 
-      const entitiesWithTypeA : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeA)
-      )
-      const entitiesWithTypeB : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeB)
-      )
-      const entitiesWithTypeC : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeC)
-      )
+      const entitiesWithTypeA : Sequence<number> = ecs.getEntitiesWithType(ComponentTypeA)
+      const entitiesWithTypeB : Sequence<number> = ecs.getEntitiesWithType(ComponentTypeB)
+      const entitiesWithTypeC : Sequence<number> = ecs.getEntitiesWithType(ComponentTypeC)
 
       expect(new Set(entitiesWithTypeA)).toEqual(new Set([25, 21, 13]))
       expect(new Set(entitiesWithTypeB)).toEqual(new Set([21]))
@@ -1256,171 +1073,26 @@ describe('EntityComponentSystem', function () {
       expect(new Set(entitiesWithTypeB)).toEqual(new Set([21]))
       expect(new Set(entitiesWithTypeC)).toEqual(new Set([21, 13]))
     })
-
-    it('move back the type cursor if necessary', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      for (let index = 0; index < 20; ++index) {
-        ecs.createType(createTypeHandler())
-      }
-
-      const deleted : number = ecs.types.get(5)
-      ecs.deleteType(ecs.getHandlerOfType(deleted))
-
-      expect(ecs.createType(createTypeHandler())).toBe(deleted)
-    })
-  })
-
-  describe('#deleteTypeByIdentifier', function () {
-    it('remove a type from the ecs', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
-
-      expect(new Set(ecs.types)).toEqual(new Set([26, 5, 12]))
-
-      ecs.deleteTypeByIdentifier(5)
-
-      expect(new Set(ecs.types)).toEqual(new Set([26, 12]))
-    })
-
-    it('throw an error if you trying to remove a type that does not exists', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
-
-      expect(_ => ecs.deleteTypeByIdentifier(50)).toThrow()
-    })
-
-    it('inform underlying systems of the deletion', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const system : System = createSystem()
-
-      ecs.addSystem(system)
-
-      ecs.setType(26, createTypeHandler())
-      ecs.setType(5, createTypeHandler())
-      ecs.setType(12, createTypeHandler())
-      ecs.deleteTypeByIdentifier(5)
-
-      expect(system.managerWillDeleteType).toHaveBeenCalledWith(5)
-      expect(system.managerDidDeleteType).toHaveBeenCalledWith(5)
-    })
-
-    it('remove all components of the given type', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : TypeHandler = createTypeHandler()
-      const ComponentTypeB : TypeHandler = createTypeHandler()
-      const ComponentTypeC : TypeHandler = createTypeHandler()
-
-      ecs.addEntity(25)
-      ecs.addEntity(21)
-      ecs.addEntity(13)
-
-      ecs.createType(ComponentTypeA)
-      ecs.createType(ComponentTypeB)
-      ecs.createType(ComponentTypeC)
-
-      ecs.createComponent(25, ComponentTypeA)
-      ecs.createComponent(21, ComponentTypeA)
-      ecs.createComponent(21, ComponentTypeB)
-      ecs.createComponent(21, ComponentTypeC)
-      ecs.createComponent(13, ComponentTypeA)
-      ecs.createComponent(13, ComponentTypeC)
-
-      const entitiesWithTypeA : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeA)
-      )
-      const entitiesWithTypeB : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeB)
-      )
-      const entitiesWithTypeC : Collection<number> = (
-        ecs.getEntitiesWithType(ComponentTypeC)
-      )
-
-      expect(new Set(entitiesWithTypeA)).toEqual(new Set([25, 21, 13]))
-      expect(new Set(entitiesWithTypeB)).toEqual(new Set([21]))
-      expect(new Set(entitiesWithTypeC)).toEqual(new Set([21, 13]))
-
-      ecs.deleteTypeByIdentifier(ecs.getTypeOfHandler(ComponentTypeA))
-
-      expect(new Set(entitiesWithTypeA)).toEqual(new Set())
-      expect(new Set(entitiesWithTypeB)).toEqual(new Set([21]))
-      expect(new Set(entitiesWithTypeC)).toEqual(new Set([21, 13]))
-    })
-
-    it('move back the type cursor if necessary', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      for (let index = 0; index < 20; ++index) {
-        ecs.createType(createTypeHandler())
-      }
-
-      const deleted : number = ecs.types.get(5)
-      ecs.deleteTypeByIdentifier(deleted)
-
-      expect(ecs.createType(createTypeHandler())).toBe(deleted)
-    })
-  })
-
-  describe('#getTypeOfHandler', function () {
-    it('return the type assigned to a given handler', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      const handler26 : TypeHandler = createTypeHandler()
-      const handler5 : TypeHandler = createTypeHandler()
-      const handler12 : TypeHandler = createTypeHandler()
-
-      ecs.setType(26, handler26)
-      ecs.setType(5, handler5)
-      ecs.setType(12, handler12)
-
-      expect(ecs.getTypeOfHandler(handler26)).toBe(26)
-      expect(ecs.getTypeOfHandler(handler5)).toBe(5)
-      expect(ecs.getTypeOfHandler(handler12)).toBe(12)
-    })
-  })
-
-  describe('#getHandlerOfType', function () {
-    it('return the handler assigned to a given type', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-
-      const handler26 : TypeHandler = createTypeHandler()
-      const handler5 : TypeHandler = createTypeHandler()
-      const handler12 : TypeHandler = createTypeHandler()
-
-      ecs.setType(26, handler26)
-      ecs.setType(5, handler5)
-      ecs.setType(12, handler12)
-
-      expect(ecs.getHandlerOfType(26)).toBe(handler26)
-      expect(ecs.getHandlerOfType(5)).toBe(handler5)
-      expect(ecs.getHandlerOfType(12)).toBe(handler12)
-    })
   })
 
   describe('#getTypesOfEntity', function () {
     it('return a view over the types of a given entity', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : TypeHandler = createTypeHandler()
-      const ComponentTypeB : TypeHandler = createTypeHandler()
-      const ComponentTypeC : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
+      const ComponentTypeB : ComponentType<any> = createComponentType()
+      const ComponentTypeC : ComponentType<any> = createComponentType()
 
       ecs.addEntity(25)
       ecs.addEntity(21)
       ecs.addEntity(13)
 
-      const typeA : number = ecs.createType(ComponentTypeA)
-      const typeB : number = ecs.createType(ComponentTypeB)
-      const typeC : number = ecs.createType(ComponentTypeC)
+      ecs.addType(ComponentTypeA)
+      ecs.addType(ComponentTypeB)
+      ecs.addType(ComponentTypeC)
 
-      const typesOfEntity25 : Collection<number> = ecs.getTypesOfEntity(25)
-      const typesOfEntity21 : Collection<number> = ecs.getTypesOfEntity(21)
-      const typesOfEntity13 : Collection<number> = ecs.getTypesOfEntity(13)
+      const typesOfEntity25 : Sequence<ComponentType<any>> = ecs.getTypesOfEntity(25)
+      const typesOfEntity21 : Sequence<ComponentType<any>> = ecs.getTypesOfEntity(21)
+      const typesOfEntity13 : Sequence<ComponentType<any>> = ecs.getTypesOfEntity(13)
 
       ecs.createComponent(25, ComponentTypeA)
       ecs.createComponent(21, ComponentTypeA)
@@ -1429,39 +1101,39 @@ describe('EntityComponentSystem', function () {
       ecs.createComponent(13, ComponentTypeA)
       ecs.createComponent(13, ComponentTypeC)
 
-      expect(new Set(typesOfEntity25)).toEqual(new Set([typeA]))
-      expect(new Set(typesOfEntity21)).toEqual(new Set([typeA, typeB, typeC]))
-      expect(new Set(typesOfEntity13)).toEqual(new Set([typeA, typeC]))
+      expect(new Set(typesOfEntity25)).toEqual(new Set([ComponentTypeA]))
+      expect(new Set(typesOfEntity21)).toEqual(new Set([ComponentTypeA, ComponentTypeB, ComponentTypeC]))
+      expect(new Set(typesOfEntity13)).toEqual(new Set([ComponentTypeA, ComponentTypeC]))
     })
   })
 
   describe('#createComponent', function () {
     it('allows to instanciate new components', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(25)
 
       expect(new Set(ecs.components)).toEqual(new Set())
 
-      const component : number = ecs.createComponent(25, ComponentType)
+      const component : number = ecs.createComponent(25, ComponentTypeA)
 
       expect(new Set(ecs.components)).toEqual(new Set([component]))
     })
 
     it('allows to instanciate multiple components', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const types : TypeHandler[] = [
-        createTypeHandler(),
-        createTypeHandler(),
-        createTypeHandler()
+      const types : ComponentType<any>[] = [
+        createComponentType(),
+        createComponentType(),
+        createComponentType()
       ]
 
-      for (const type of types) ecs.createType(type)
+      for (const type of types) ecs.addType(type)
 
       expect(new Set(ecs.components)).toEqual(new Set())
-      const components : Set<number> = new Set<number>()
+      const components : Set<any> = new Set<any>()
 
       for (let index = 0; index < 20; ++index) {
         if (index % 3 === 0) ecs.addEntity(index / 3)
@@ -1474,43 +1146,43 @@ describe('EntityComponentSystem', function () {
 
     it('throw an error if the entity to mutate does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
 
-      expect(_ => ecs.createComponent(20, ComponentType)).toThrow()
+      expect(_ => ecs.createComponent(20, ComponentTypeA)).toThrow()
     })
 
     it('throw an error if the type to instanciate does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
       ecs.addEntity(20)
 
-      expect(_ => ecs.createComponent(20, ComponentType)).toThrow()
+      expect(_ => ecs.createComponent(20, ComponentTypeA)).toThrow()
     })
 
     it('throw an error if the entity to mutate does already have a component of the same type', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
       ecs.addEntity(20)
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
 
-      ecs.createComponent(20, ComponentType)
+      ecs.createComponent(20, ComponentTypeA)
 
-      expect(_ => ecs.createComponent(20, ComponentType)).toThrow()
+      expect(_ => ecs.createComponent(20, ComponentTypeA)).toThrow()
     })
 
     it('throw an error if you exceed the component capacity of the ecs', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const types : TypeHandler[] = [
-        createTypeHandler(),
-        createTypeHandler(),
-        createTypeHandler()
+      const types : ComponentType<any>[] = [
+        createComponentType(),
+        createComponentType(),
+        createComponentType()
       ]
 
-      for (const type of types) ecs.createType(type)
+      for (const type of types) ecs.addType(type)
 
       for (let index = 0; index < ecs.capacity.components; ++index) {
         if (index % 3 === 0) ecs.addEntity(index / 3)
@@ -1526,131 +1198,80 @@ describe('EntityComponentSystem', function () {
 
     it('inform underlying systems of the action', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
       const system : System = createSystem()
 
       ecs.addSystem(system)
-      const componentType : number = ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(15)
-      const component : number = ecs.createComponent(15, ComponentType)
+
+      const component : number = ecs.createComponent(15, ComponentTypeA)
 
       expect(system.managerWillAddComponent).toHaveBeenCalledWith(
-        component, 15, componentType
+        15, ComponentTypeA
       )
       expect(system.managerDidAddComponent).toHaveBeenCalledWith(
-        component
+        component, ComponentTypeA
       )
-    })
-  })
-
-  describe('#getEntityOfComponent', function () {
-    it('return the entity of a given component', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
-
-      ecs.createType(ComponentType)
-      ecs.addEntity(25)
-
-      const component : number = ecs.createComponent(25, ComponentType)
-
-      expect(ecs.getEntityOfComponent(component)).toBe(25)
     })
   })
 
   describe('#getTypeOfComponent', function () {
     it('return the type of a given component', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
-      const componentType : number = ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(25)
 
-      const component : number = ecs.createComponent(25, ComponentType)
+      const component : any = ecs.createComponent(25, ComponentTypeA)
 
-      expect(ecs.getTypeOfComponent(component)).toBe(componentType)
-    })
-  })
-
-  describe('#getInstanceOfComponent', function () {
-    it('return the instance of a given component', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
-      const instance : any = {}
-
-      ComponentType.instanciate = function () { return instance }
-
-      ecs.createType(ComponentType)
-      ecs.addEntity(25)
-
-      const component : number = ecs.createComponent(25, ComponentType)
-
-      expect(ecs.getInstanceOfComponent(component)).toBe(instance)
-    })
-  })
-
-  describe('#getComponentOfInstance', function () {
-    it('return the component related to the given instance', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
-      const instance : any = {}
-
-      ComponentType.instanciate = function () { return instance }
-
-      ecs.createType(ComponentType)
-      ecs.addEntity(25)
-
-      const component : number = ecs.createComponent(25, ComponentType)
-
-      expect(ecs.getComponentOfInstance(instance)).toBe(component)
-    })
-  })
-
-  describe('#isComponentInstance', function () {
-    it('return true if the given object is a component instance', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
-      const instance : any = {}
-
-      ComponentType.instanciate = function () { return instance }
-
-      ecs.createType(ComponentType)
-      ecs.addEntity(25)
-
-      const component : number = ecs.createComponent(25, ComponentType)
-
-      expect(ecs.isComponentInstance(instance)).toBeTruthy()
-      expect(ecs.isComponentInstance(25)).toBeFalsy()
+      expect(ecs.getTypeOfComponent(component)).toBe(ComponentTypeA)
     })
   })
 
   describe('#getComponent', function () {
-    it('return a component', function () {
+    it('return a component by using it\'s identifier', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(25)
 
-      const component : number = ecs.createComponent(25, ComponentType)
+      const component : any = ecs.createComponent(25, ComponentTypeA)
 
-      expect(ecs.getComponent(25, ComponentType)).toBe(component)
+      expect(ecs.getComponent(component.identifier)).toBe(component)
+    })
+  })
+
+  describe('#getComponentOfEntity', function () {
+    it('return a component by using a couple entity / type', function () {
+      const ecs : EntityComponentSystem = BUILDER.build()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
+
+      ecs.addType(ComponentTypeA)
+      ecs.addEntity(25)
+
+      const component : any = ecs.createComponent(25, ComponentTypeA)
+
+      expect(ecs.getComponentOfEntity(25, ComponentTypeA)).toBe(component)
     })
   })
 
   describe('#hasComponent', function () {
     it('return true if the given component exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
-      const ComponentTypeB : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
+      const ComponentTypeB : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentType)
-      ecs.createType(ComponentTypeB)
+      ecs.addType(ComponentTypeA)
+      ecs.addType(ComponentTypeB)
       ecs.addEntity(25)
 
-      const component : number = ecs.createComponent(25, ComponentType)
+      const component : number = ecs.createComponent(25, ComponentTypeA)
 
-      expect(ecs.hasComponent(25, ComponentType)).toBeTruthy()
-      expect(ecs.hasComponent(10, ComponentType)).toBeFalsy()
+      expect(ecs.hasComponent(25, ComponentTypeA)).toBeTruthy()
+      expect(ecs.hasComponent(10, ComponentTypeA)).toBeFalsy()
       expect(ecs.hasComponent(25, ComponentTypeB)).toBeFalsy()
     })
   })
@@ -1658,190 +1279,128 @@ describe('EntityComponentSystem', function () {
   describe('#deleteComponent', function () {
     it('allows to delete existing components', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(25)
 
-      const component : number = ecs.createComponent(25, ComponentType)
+      const component : number = ecs.createComponent(25, ComponentTypeA)
 
       expect(new Set(ecs.components)).toEqual(new Set([component]))
 
-      ecs.deleteComponent(25, ComponentType)
+      ecs.deleteComponent(25, ComponentTypeA)
 
       expect(new Set(ecs.components)).toEqual(new Set())
     })
 
     it('throw an error if the entity to mutate does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
 
-      expect(_ => ecs.deleteComponent(20, ComponentType)).toThrow()
+      expect(_ => ecs.deleteComponent(20, ComponentTypeA)).toThrow()
     })
 
     it('throw an error if the type of the component to delete does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
       ecs.addEntity(20)
 
-      expect(_ => ecs.deleteComponent(20, ComponentType)).toThrow()
+      expect(_ => ecs.deleteComponent(20, ComponentTypeA)).toThrow()
     })
 
     it('throw an error if the component to delete does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
       ecs.addEntity(20)
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
 
-      expect(_ => ecs.deleteComponent(20, ComponentType)).toThrow()
-    })
-
-    it('move the component cursor', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const types : TypeHandler[] = [
-        createTypeHandler(),
-        createTypeHandler(),
-        createTypeHandler()
-      ]
-
-      for (const type of types) ecs.createType(type)
-
-      for (let index = 0; index < 30; ++index) {
-        if (index % 3 === 0) ecs.addEntity(index / 3)
-        ecs.createComponent((index / 3) << 0, types[index % 3])
-      }
-
-      const components : Set<number> = new Set<number>(ecs.components)
-
-      ecs.deleteComponent(
-        ecs.getEntityOfComponent(ecs.components.get(10)),
-        ecs.getHandlerOfType(ecs.getTypeOfComponent(ecs.components.get(10)))
-      )
-
-      ecs.addEntity(50)
-      ecs.createComponent(50, types[1])
-
-      expect(new Set(ecs.components)).toEqual(components)
+      expect(_ => ecs.deleteComponent(20, ComponentTypeA)).toThrow()
     })
 
     it('inform underlying systems of the action', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
       const system : System = createSystem()
 
       ecs.addSystem(system)
-      const componentType : number = ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(15)
-      const component : number = ecs.createComponent(15, ComponentType)
+      const component : number = ecs.createComponent(15, ComponentTypeA)
 
-      ecs.deleteComponent(15, ComponentType)
+      ecs.deleteComponent(15, ComponentTypeA)
 
-      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(
-        component
-      )
-      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(
-        component, 15, componentType
-      )
+      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
+      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
     })
   })
 
   describe('#deleteComponentByIdentifier', function () {
     it('allows to delete existing components', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(25)
 
-      const component : number = ecs.createComponent(25, ComponentType)
+      const component : any = ecs.createComponent(25, ComponentTypeA)
 
       expect(new Set(ecs.components)).toEqual(new Set([component]))
 
-      ecs.deleteComponentByIdentifier(component)
+      ecs.deleteComponentByIdentifier(component.identifier)
 
       expect(new Set(ecs.components)).toEqual(new Set())
     })
 
     it('throw an error if the component to delete does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
 
       expect(_ => ecs.deleteComponentByIdentifier(25)).toThrow()
     })
 
-    it('move the component cursor', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const types : TypeHandler[] = [
-        createTypeHandler(),
-        createTypeHandler(),
-        createTypeHandler()
-      ]
-
-      for (const type of types) ecs.createType(type)
-
-      for (let index = 0; index < 30; ++index) {
-        if (index % 3 === 0) ecs.addEntity(index / 3)
-        ecs.createComponent((index / 3) << 0, types[index % 3])
-      }
-
-      const components : Set<number> = new Set<number>(ecs.components)
-
-      ecs.deleteComponentByIdentifier(ecs.components.get(10))
-
-      ecs.addEntity(50)
-      ecs.createComponent(50, types[1])
-
-      expect(new Set(ecs.components)).toEqual(components)
-    })
-
     it('inform underlying systems of the action', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
+      const ComponentTypeA : ComponentType<any> = createComponentType()
       const system : System = createSystem()
 
       ecs.addSystem(system)
-      const componentType : number = ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(15)
-      const component : number = ecs.createComponent(15, ComponentType)
 
-      ecs.deleteComponentByIdentifier(component)
+      const component : any = ecs.createComponent(15, ComponentTypeA)
 
-      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(
-        component
-      )
-      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(
-        component, 15, componentType
-      )
+      ecs.deleteComponentByIdentifier(component.identifier)
+
+      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
+      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
     })
   })
 
   describe('#clearComponents', function () {
     it('delete all components of the entity-component-system', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentType : TypeHandler = createTypeHandler()
-      ecs.deleteComponentByIdentifier = (
-        jest.fn(ecs.deleteComponentByIdentifier.bind(ecs))
-      )
+      const ComponentTypeA : ComponentType<any> = createComponentType()
+      ecs.deleteComponentByIdentifier = jest.fn(ecs.deleteComponentByIdentifier.bind(ecs))
 
-      ecs.createType(ComponentType)
+      ecs.addType(ComponentTypeA)
       ecs.addEntity(20)
       ecs.addEntity(12)
       ecs.addEntity(9)
 
-      const components : number[] = [
-        ecs.createComponent(20, ComponentType),
-        ecs.createComponent(12, ComponentType),
-        ecs.createComponent(9, ComponentType)
+      const components : any[] = [
+        ecs.createComponent(20, ComponentTypeA),
+        ecs.createComponent(12, ComponentTypeA),
+        ecs.createComponent(9, ComponentTypeA)
       ]
 
       ecs.clearComponents()
 
       for (const component of components) {
-        expect(ecs.deleteComponentByIdentifier).toHaveBeenCalledWith(component)
+        expect(ecs.deleteComponentByIdentifier).toHaveBeenCalledWith(component.identifier)
       }
     })
   })

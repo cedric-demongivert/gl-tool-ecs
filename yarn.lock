@@ -642,6 +642,11 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@cedric-demongivert/gl-tool-collection@^0.20.3":
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/@cedric-demongivert/gl-tool-collection/-/gl-tool-collection-0.20.3.tgz#5fa547204b91dfb8d0978f035133892b1dd5c75d"
+  integrity sha512-89wOH5pcR0tIgsM676ChbLO1IL+b1r97afysaFhTBnjE07YMz6pAmFsLQ1DpjTldG3KaFfVZWnzV1cx9pEWx2Q==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"

@@ -1,0 +1,8 @@
+{
+  "inputFiles": ["./sources"],
+  "mode": "file",
+  "out": "./distribution/documentation",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeNotExported": true
+}

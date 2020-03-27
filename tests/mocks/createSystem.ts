@@ -1,4 +1,4 @@
-import { System } from '../../src/ts/systems/System'
+import { System } from '../../sources/System'
 
 
 export function createSystem () : System {
@@ -13,35 +13,19 @@ export function createSystem () : System {
   system.managerDidAddTag = jest.fn((tag : number) => { })
   system.managerWillDeleteTag = jest.fn((tag : number) => { })
   system.managerDidDeleteTag = jest.fn((tag : number) => { })
-  system.managerWillAttachTagToEntity = jest.fn(
-    (tag : number, entity : number) => { }
-  )
-  system.managerDidAttachTagToEntity = jest.fn(
-    (tag : number, entity : number) => { }
-  )
-  system.managerWillDetachTagFromEntity = jest.fn(
-    (tag : number, entity : number) => { }
-  )
-  system.managerDidDetachTagFromEntity = jest.fn(
-    (tag : number, entity : number) => { }
-  )
-  system.managerWillAddType = jest.fn((type : number) => { })
-  system.managerDidAddType = jest.fn((type : number) => { })
-  system.managerWillDeleteType = jest.fn((type : number) => { })
-  system.managerDidDeleteType = jest.fn((type : number) => { })
-  system.managerWillAddComponent = jest.fn((
-    component : number,
-    entity : number,
-    type : number
-  ) => { })
-  system.managerDidAddComponent = jest.fn((component : number) => { })
+  system.managerWillAttachTagToEntity = jest.fn((tag : number, entity : number) => { })
+  system.managerDidAttachTagToEntity = jest.fn((tag : number, entity : number) => { })
+  system.managerWillDetachTagFromEntity = jest.fn((tag : number, entity : number) => { })
+  system.managerDidDetachTagFromEntity = jest.fn((tag : number, entity : number) => { })
+  system.managerWillAddType = jest.fn((type : any) => { })
+  system.managerDidAddType = jest.fn((type : any) => { })
+  system.managerWillDeleteType = jest.fn((type : any) => { })
+  system.managerDidDeleteType = jest.fn((type : any) => { })
+  system.managerWillAddComponent = jest.fn((entity : number, type : any) => { })
   system.managerDidAddComponent = jest.fn((component : any) => { })
-  system.managerWillDeleteComponent = jest.fn((component : any) => { })
-  system.managerDidDeleteComponent = jest.fn((
-    component : any,
-    entity : number,
-    type : number
-  ) => { })
+  system.managerDidAddComponent = jest.fn((component : any, type : any) => { })
+  system.managerWillDeleteComponent = jest.fn((component : any, type : any) => { })
+  system.managerDidDeleteComponent = jest.fn((component : any, type : any) => { })
   system.managerWillUpdate = jest.fn((delta : number) => { })
   system.update = jest.fn((delta : number) => { })
   system.managerDidUpdate = jest.fn((delta : number) => { })

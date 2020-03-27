@@ -1,2 +1,2 @@
-export { createCollection } from './createCollection'
-export { createTypeHandler } from './createTypeHandler'
+export { createComponentType } from './createComponentType'
+export { createSystem } from './createSystem'

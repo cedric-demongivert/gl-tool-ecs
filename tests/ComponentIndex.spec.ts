@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { ComponentIndex } from '../src/ts/components/ComponentIndex'
+import { ComponentIndex } from '../sources/ComponentIndex'
 
 describe('ComponentIndex', function () {
   describe('#copy', function () {
@@ -62,22 +62,13 @@ describe('ComponentIndex', function () {
       components.set(128, 13, 14)
       components.set(128, 14, 14)
 
-      expect(new Set(components.getTypesOfEntity(5))).toEqual(
-        new Set([10, 13, 8])
-      )
-
-      expect(new Set(components.getTypesOfEntity(128))).toEqual(
-        new Set([3, 13, 14])
-      )
+      expect(new Set(components.getTypesOfEntity(5))).toEqual(new Set([10, 13, 8]))
+      expect(new Set(components.getTypesOfEntity(128))).toEqual(new Set([3, 13, 14]))
       expect(new Set(components.getEntitiesWithType(3))).toEqual(new Set([128]))
       expect(new Set(components.getEntitiesWithType(8))).toEqual(new Set([5]))
       expect(new Set(components.getEntitiesWithType(10))).toEqual(new Set([5]))
-      expect(new Set(components.getEntitiesWithType(13))).toEqual(
-        new Set([128, 5])
-      )
-      expect(new Set(components.getEntitiesWithType(14))).toEqual(
-        new Set([128])
-      )
+      expect(new Set(components.getEntitiesWithType(13))).toEqual(new Set([128, 5]))
+      expect(new Set(components.getEntitiesWithType(14))).toEqual(new Set([128]))
     })
 
     it('replace a previously setted component', function () {

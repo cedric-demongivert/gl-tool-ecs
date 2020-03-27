@@ -1,12 +1,8 @@
 /** eslint-env jest */
 
-import {
-  EntityComponentSystemBuilder
-} from '../src/ts/EntityComponentSystemBuilder'
+import { EntityComponentSystemBuilder } from '../sources/EntityComponentSystemBuilder'
 
-import {
-  EntityComponentSystem
-} from '../src/ts/EntityComponentSystem'
+import { EntityComponentSystem } from '../sources/EntityComponentSystem'
 
 describe('EntityComponentSystemBuilder', function () {
   describe('#constructor', function () {
@@ -79,7 +75,7 @@ describe('EntityComponentSystemBuilder', function () {
   })
 
   describe('#build', function () {
-    it('instanciate the described entity-component-system', function () {
+    it('instantiate the described entity-component-system', function () {
       const builder : EntityComponentSystemBuilder = (
         new EntityComponentSystemBuilder()
       )
