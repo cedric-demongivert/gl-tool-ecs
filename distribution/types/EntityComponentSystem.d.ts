@@ -267,6 +267,7 @@ export declare class EntityComponentSystem {
     */
     getComponent(identifier: number): Component;
     getComponent<Type extends Component>(identifier: number, type: ComponentType<Type>): Type;
+    getComponentOfEntity<Type extends Component>(entity: Entity, type: ComponentType<Type>): Type;
     /**
     * Return true if the given entity has a component of the given type.
     *
