@@ -36,7 +36,7 @@ publish:
   only:
     - tags
   script:
-    - npm publish ./dist --access public
+    - npm publish ./distribution --access public
   tags:
     - NodeJS
     - NPM
