@@ -18,11 +18,11 @@ export interface ComponentType<Type extends Component> {
     * @param origin - Instance of this type to copy.
     * @param target - Instance of this type to update.
     */
-    copy(origin: Type, target: Type): void;
+    copy?(origin: Type, target: Type): void;
     /**
     * Reset an instance of this type.
     *
     * @param instance - The instance of this type to reset.
     */
-    clear(instance: Type): void;
+    clear?(instance: Type): void;
 }
