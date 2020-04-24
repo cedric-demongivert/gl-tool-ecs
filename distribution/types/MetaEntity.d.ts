@@ -69,7 +69,7 @@ export declare class MetaEntity {
     *
     * @return The component of the given type, if exists.
     */
-    getComponent<Type extends Component>(type: ComponentType<Type>): Type;
+    getComponent<Type>(type: ComponentType<Type>): Component<Type>;
     /**
     * Create a component of a particular type for this entity.
     *
@@ -77,7 +77,7 @@ export declare class MetaEntity {
     *
     * @return The created component.
     */
-    createComponent<Type extends Component>(type: ComponentType<Type>): Type;
+    createComponent<Type>(type: ComponentType<Type>): Component<Type>;
     /**
     * Delete a component of a particular type attached to this entity.
     *

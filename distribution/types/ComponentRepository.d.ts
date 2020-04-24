@@ -13,7 +13,7 @@ export interface ComponentRepository {
     *
     * @return The new component instance.
     */
-    create<Type extends Component>(entity: number, type: ComponentType<Type>): Type;
+    create<Type>(entity: number, type: ComponentType<Type>): Component<Type>;
     /**
     * Remove the component with the given identifier from this collection.
     *
@@ -25,7 +25,7 @@ export interface ComponentRepository {
     *
     * @param component - The component to delete.
     */
-    delete(component: Component): void;
+    delete(component: Component<any>): void;
     /**
     * Get the component at the given index.
     *
@@ -33,7 +33,7 @@ export interface ComponentRepository {
     *
     * @return The component at the given index.
     */
-    getNth(index: number): Component;
+    getNth(index: number): Component<any>;
     /**
     * Return the index of the given component in the sequence described by this repository.
     *
@@ -41,7 +41,7 @@ export interface ComponentRepository {
     *
     * @return The index of the given component in the sequence described by this repository.
     */
-    indexOf(component: Component): number;
+    indexOf(component: Component<any>): number;
     /**
     * Get a component by using it's identifier.
     *
@@ -49,7 +49,7 @@ export interface ComponentRepository {
     *
     * @return The component with the given identifier.
     */
-    get(identifier: number): Component;
+    get(identifier: number): Component<any>;
     /**
     * Get a component of the given type by using it's identifier.
     *
@@ -58,7 +58,7 @@ export interface ComponentRepository {
     *
     * @return The component of the given type with the given identifier.
     */
-    get<Type extends Component>(identifier: number, type: ComponentType<Type>): Type;
+    get<Type>(identifier: number, type: ComponentType<Type>): Component<Type>;
     /**
     * Return true if the given component exists into this repository.
     *
@@ -66,7 +66,7 @@ export interface ComponentRepository {
     *
     * @return True if the given component exists into this repository.
     */
-    has(component: Component): boolean;
+    has(component: Component<any>): boolean;
     /**
     * Return true if a component with the given identifier exists into this repository.
     *
@@ -75,22 +75,6 @@ export interface ComponentRepository {
     * @return True if a component with the given identifier exists into this repository.
     */
     has(identifier: number): boolean;
-    /**
-    * Return the type of the component with the given identifier.
-    *
-    * @param identifier - Identifier of the component to search for.
-    *
-    * @return The type of the given component.
-    */
-    getType(identifier: number): ComponentType<any>;
-    /**
-    * Return the type of the given component.
-    *
-    * @param component - The component to search for.
-    *
-    * @return The type of the given component.
-    */
-    getType<Type extends Component>(component: Type): ComponentType<Type>;
     /**
     * Empty this component repository.
     */

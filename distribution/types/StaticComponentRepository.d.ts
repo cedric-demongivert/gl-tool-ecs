@@ -1,10 +1,10 @@
+import { Entity } from './Entity';
 import { ComponentType } from './ComponentType';
 import { Component } from './Component';
 import { ComponentRepository } from './ComponentRepository';
 export declare class StaticComponentRepository implements ComponentRepository {
     private _identifiers;
     private _components;
-    private _types;
     /**
     * Create a new empty static component repository with a given capacity.
     *
@@ -32,35 +32,30 @@ export declare class StaticComponentRepository implements ComponentRepository {
     /**
     * @see ComponentRepository.create
     */
-    create<Type extends Component>(entity: number, type: ComponentType<Type>): Type;
+    create<Type>(entity: Entity, type: ComponentType<Type>): Component<Type>;
     /**
     * @see ComponentRepository.delete
     */
     delete(identifier: number): void;
-    delete(component: Component): void;
+    delete(component: Component<any>): void;
     /**
     * @see ComponentRepository.getNth
     */
-    getNth(index: number): Component;
+    getNth(index: number): Component<any>;
     /**
     * @see ComponentRepository.indexOf
     */
-    indexOf(component: Component): number;
+    indexOf(component: Component<any>): number;
     /**
     * @see ComponentRepository.get
     */
-    get(identifier: number): Component;
-    get<Type extends Component>(identifier: number, type: ComponentType<Type>): Type;
-    /**
-    * @see ComponentRepository.getType
-    */
-    getType(identifier: number): ComponentType<any>;
-    getType<Type extends Component>(component: Type): ComponentType<Type>;
+    get(identifier: number): Component<any>;
+    get<Type>(identifier: number, type: ComponentType<Type>): Component<Type>;
     /**
     * @see ComponentRepository.has
     */
     has(identifier: number): boolean;
-    has(component: Component): boolean;
+    has(component: Component<any>): boolean;
     clone(): StaticComponentRepository;
     /**
     * @see ComponentRepository.clear
@@ -69,7 +64,7 @@ export declare class StaticComponentRepository implements ComponentRepository {
     /**
     * @see Collection.iterator
     */
-    [Symbol.iterator](): Iterator<Component>;
+    [Symbol.iterator](): Iterator<Component<any>>;
     /**
     * @see Collection.equals
     */

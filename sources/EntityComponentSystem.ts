@@ -686,7 +686,7 @@ export class EntityComponentSystem {
     this.willAddComponent(entity, type)
     const component : Component<Type> = this._components.create(entity, type)
     this._componentsIndex.set(entity, identifier, component.identifier)
-    this.didAddComponent(component, type)
+    this.didAddComponent(component)
 
     return component
   }
@@ -757,10 +757,10 @@ export class EntityComponentSystem {
       this._componentsIndex.get(entity, identifier)
     )
 
-    this.willDeleteComponent(component, type)
+    this.willDeleteComponent(component)
     this._componentsIndex.delete(entity, identifier)
     this._components.delete(component.identifier)
-    this.didDeleteComponent(component, type)
+    this.didDeleteComponent(component)
   }
 
   /**
@@ -779,10 +779,10 @@ export class EntityComponentSystem {
     const instance : Component<any> = this._components.get(component)
     const type : ComponentType<any> = instance.type
 
-    this.willDeleteComponent(instance, type)
+    this.willDeleteComponent(instance)
     this._componentsIndex.delete(instance.entity, this._types.get(type))
     this._components.delete(component)
-    this.didDeleteComponent(instance, type)
+    this.didDeleteComponent(instance)
   }
 
   /**
@@ -812,11 +812,10 @@ export class EntityComponentSystem {
   * Called when this entity-component-system did add a component.
   *
   * @param component - The component that was added.
-  * @param type - The type of the component that was added.
   */
-  private didAddComponent (component : Component<any>, type : ComponentType<any>) : void {
+  private didAddComponent (component : Component<any>) : void {
     for (let index = 0, size = this._systems.size; index < size; ++index) {
-      this._systems.get(index).managerDidAddComponent(component, type)
+      this._systems.get(index).managerDidAddComponent(component)
     }
   }
 
@@ -824,11 +823,10 @@ export class EntityComponentSystem {
   * Called when this entity-component-system will delete a component.
   *
   * @param component - The component that will be deleted.
-  * @param type - The type of the component that will be deleted.
   */
-  private willDeleteComponent (component : Component<any>, type : ComponentType<any>) : void {
+  private willDeleteComponent (component : Component<any>) : void {
     for (let index = 0, size = this._systems.size; index < size; ++index) {
-      this._systems.get(index).managerWillDeleteComponent(component, type)
+      this._systems.get(index).managerWillDeleteComponent(component)
     }
   }
 
@@ -838,9 +836,9 @@ export class EntityComponentSystem {
   * @param component - The component that was deleted.
   * @param type - The type of the component that was deleted.
   */
-  private didDeleteComponent (component : Component<any>, type : ComponentType<any>) : void {
+  private didDeleteComponent (component : Component<any>) : void {
     for (let index = 0, size = this._systems.size; index < size; ++index) {
-      this._systems.get(index).managerDidDeleteComponent(component, type)
+      this._systems.get(index).managerDidDeleteComponent(component)
     }
   }
 

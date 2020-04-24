@@ -135,19 +135,19 @@ export declare class System {
     *
     * @param component - The component that was added.
     */
-    managerDidAddComponent(component: Component, type: ComponentType<any>): void;
+    managerDidAddComponent(component: Component<any>): void;
     /**
     * Called when the parent manager will delete a component.
     *
     * @param component - The component that will be deleted.
     */
-    managerWillDeleteComponent(component: Component, type: ComponentType<any>): void;
+    managerWillDeleteComponent(component: Component<any>): void;
     /**
     * Called when the parent manager did delete a component.
     *
     * @param component - The component that was deleted.
     */
-    managerDidDeleteComponent(component: Component, type: ComponentType<any>): void;
+    managerDidDeleteComponent(component: Component<any>): void;
     /**
     * Called when the manager will update all its systems.
     *

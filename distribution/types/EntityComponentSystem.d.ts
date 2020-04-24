@@ -16,7 +16,7 @@ export declare class EntityComponentSystem {
     private _typesByEntity;
     readonly systems: Sequence<System>;
     private _systems;
-    readonly components: Sequence<Component>;
+    readonly components: Sequence<Component<any>>;
     private _components;
     private _componentsIndex;
     private _capacity;
@@ -248,16 +248,7 @@ export declare class EntityComponentSystem {
     *
     * @return The created component.
     */
-    createComponent<Type extends Component>(entity: number, type: ComponentType<Type>): Type;
-    /**
-    * Return the type of a given component.
-    *
-    * @param identifier - Identifier of the component to get.
-    *
-    * @return The type of the given component.
-    */
-    getTypeOfComponent<Type extends Component>(component: Type): ComponentType<Type>;
-    getTypeOfComponent(component: number): ComponentType<any>;
+    createComponent<Type>(entity: number, type: ComponentType<Type>): Component<Type>;
     /**
     * Return the instance of a given component.
     *
@@ -265,9 +256,9 @@ export declare class EntityComponentSystem {
     *
     * @return The instance of the given component.
     */
-    getComponent(identifier: number): Component;
-    getComponent<Type extends Component>(identifier: number, type: ComponentType<Type>): Type;
-    getComponentOfEntity<Type extends Component>(entity: Entity, type: ComponentType<Type>): Type;
+    getComponent(identifier: number): Component<any>;
+    getComponent<Type>(identifier: number, type: ComponentType<Type>): Component<Type>;
+    getComponentOfEntity<Type>(entity: Entity, type: ComponentType<Type>): Component<Type>;
     /**
     * Return true if the given entity has a component of the given type.
     *
@@ -305,14 +296,12 @@ export declare class EntityComponentSystem {
     * Called when this entity-component-system did add a component.
     *
     * @param component - The component that was added.
-    * @param type - The type of the component that was added.
     */
     private didAddComponent;
     /**
     * Called when this entity-component-system will delete a component.
     *
     * @param component - The component that will be deleted.
-    * @param type - The type of the component that will be deleted.
     */
     private willDeleteComponent;
     /**

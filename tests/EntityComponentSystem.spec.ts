@@ -1207,12 +1207,8 @@ describe('EntityComponentSystem', function () {
 
       const component : any = ecs.createComponent(15, ComponentTypeA)
 
-      expect(system.managerWillAddComponent).toHaveBeenCalledWith(
-        15, ComponentTypeA
-      )
-      expect(system.managerDidAddComponent).toHaveBeenCalledWith(
-        component, ComponentTypeA
-      )
+      expect(system.managerWillAddComponent).toHaveBeenCalledWith(15, ComponentTypeA)
+      expect(system.managerDidAddComponent).toHaveBeenCalledWith(component)
     })
   })
 
@@ -1319,8 +1315,8 @@ describe('EntityComponentSystem', function () {
 
       ecs.deleteComponent(15, ComponentTypeA)
 
-      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
-      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
+      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(component)
+      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(component)
     })
   })
 
@@ -1361,8 +1357,8 @@ describe('EntityComponentSystem', function () {
 
       ecs.deleteComponentByIdentifier(component.identifier)
 
-      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
-      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(component, ComponentTypeA)
+      expect(system.managerWillDeleteComponent).toHaveBeenCalledWith(component)
+      expect(system.managerDidDeleteComponent).toHaveBeenCalledWith(component)
     })
   })
 
