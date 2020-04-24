@@ -277,7 +277,7 @@ describe('EntityComponentSystem', function () {
       const b12 : any = ecs.createComponent(12, ComponentTypeB)
       const c12 : any = ecs.createComponent(12, ComponentTypeC)
       const a23 : any = ecs.createComponent(23, ComponentTypeB)
-      const b23 : number = ecs.createComponent(23, ComponentTypeC)
+      const b23 : any = ecs.createComponent(23, ComponentTypeC)
 
       expect(new Set(ecs.components)).toEqual(new Set([a12, b12, c12, a23, b23]))
 
@@ -1117,7 +1117,7 @@ describe('EntityComponentSystem', function () {
 
       expect(new Set(ecs.components)).toEqual(new Set())
 
-      const component : number = ecs.createComponent(25, ComponentTypeA)
+      const component : any = ecs.createComponent(25, ComponentTypeA)
 
       expect(new Set(ecs.components)).toEqual(new Set([component]))
     })
@@ -1205,7 +1205,7 @@ describe('EntityComponentSystem', function () {
       ecs.addType(ComponentTypeA)
       ecs.addEntity(15)
 
-      const component : number = ecs.createComponent(15, ComponentTypeA)
+      const component : any = ecs.createComponent(15, ComponentTypeA)
 
       expect(system.managerWillAddComponent).toHaveBeenCalledWith(
         15, ComponentTypeA
@@ -1213,20 +1213,6 @@ describe('EntityComponentSystem', function () {
       expect(system.managerDidAddComponent).toHaveBeenCalledWith(
         component, ComponentTypeA
       )
-    })
-  })
-
-  describe('#getTypeOfComponent', function () {
-    it('return the type of a given component', function () {
-      const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : ComponentType<any> = createComponentType()
-
-      ecs.addType(ComponentTypeA)
-      ecs.addEntity(25)
-
-      const component : any = ecs.createComponent(25, ComponentTypeA)
-
-      expect(ecs.getTypeOfComponent(component)).toBe(ComponentTypeA)
     })
   })
 
@@ -1268,7 +1254,7 @@ describe('EntityComponentSystem', function () {
       ecs.addType(ComponentTypeB)
       ecs.addEntity(25)
 
-      const component : number = ecs.createComponent(25, ComponentTypeA)
+      const component : any = ecs.createComponent(25, ComponentTypeA)
 
       expect(ecs.hasComponent(25, ComponentTypeA)).toBeTruthy()
       expect(ecs.hasComponent(10, ComponentTypeA)).toBeFalsy()
@@ -1284,7 +1270,7 @@ describe('EntityComponentSystem', function () {
       ecs.addType(ComponentTypeA)
       ecs.addEntity(25)
 
-      const component : number = ecs.createComponent(25, ComponentTypeA)
+      const component : any = ecs.createComponent(25, ComponentTypeA)
 
       expect(new Set(ecs.components)).toEqual(new Set([component]))
 
@@ -1329,7 +1315,7 @@ describe('EntityComponentSystem', function () {
       ecs.addSystem(system)
       ecs.addType(ComponentTypeA)
       ecs.addEntity(15)
-      const component : number = ecs.createComponent(15, ComponentTypeA)
+      const component : any = ecs.createComponent(15, ComponentTypeA)
 
       ecs.deleteComponent(15, ComponentTypeA)
 

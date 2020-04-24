@@ -4,7 +4,7 @@ import { ComponentRepository } from './ComponentRepository'
 import { Component } from './Component'
 import { ComponentRepositorySequenceIterator } from './ComponentRepositorySequenceIterator'
 
-export class ComponentRepositorySequence implements Sequence<Component> {
+export class ComponentRepositorySequence implements Sequence<Component<any>> {
   private repository : ComponentRepository
 
   public constructor (repository : ComponentRepository) {
@@ -15,11 +15,11 @@ export class ComponentRepositorySequence implements Sequence<Component> {
     return this.repository.size
   }
 
-  public get (index : number) : Component {
+  public get (index : number) : Component<any> {
     return this.repository.getNth(index)
   }
 
-  public get last () : Component {
+  public get last () : Component<any> {
     return this.repository.size <= 0 ? undefined : this.repository.getNth(this.repository.size - 1)
   }
 
@@ -27,7 +27,7 @@ export class ComponentRepositorySequence implements Sequence<Component> {
     return this.repository.size <= 0 ? 0 : this.repository.size - 1
   }
 
-  public get first () : Component {
+  public get first () : Component<any> {
     return this.repository.size <= 0 ? undefined : this.repository.getNth(0)
   }
 
@@ -35,11 +35,11 @@ export class ComponentRepositorySequence implements Sequence<Component> {
     return 0
   }
 
-  public has (element: Component) : boolean {
+  public has (element: Component<any>) : boolean {
     return this.repository.has(element)
   }
 
-  public indexOf (element: Component) : number {
+  public indexOf (element: Component<any>) : number {
     throw this.repository.indexOf(element)
   }
 
@@ -51,7 +51,7 @@ export class ComponentRepositorySequence implements Sequence<Component> {
     return result
   }
 
-  public view () : Sequence<Component> {
+  public view () : Sequence<Component<any>> {
     return this
   }
 
@@ -59,7 +59,7 @@ export class ComponentRepositorySequence implements Sequence<Component> {
     return new ComponentRepositorySequence(this.repository)
   }
 
-  public * [Symbol.iterator] (): Iterator<Component> {
+  public * [Symbol.iterator] (): Iterator<Component<any>> {
     for (let index = 0, size = this.repository.size; index < size; ++index) {
       yield this.repository.getNth(index)
     }

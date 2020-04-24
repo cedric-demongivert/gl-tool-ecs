@@ -4,7 +4,7 @@ import { BidirectionalIterator } from '@cedric-demongivert/gl-tool-collection'
 import { Component } from './Component'
 import { ComponentRepositorySequence } from './ComponentRepositorySequence'
 
-export class ComponentRepositorySequenceIterator implements BidirectionalIterator<Component> {
+export class ComponentRepositorySequenceIterator implements BidirectionalIterator<Component<any>> {
   /**
   *
   */
@@ -89,14 +89,14 @@ export class ComponentRepositorySequenceIterator implements BidirectionalIterato
   /**
   * @see Iterator.get
   */
-  public get () : Component {
+  public get () : Component<any> {
     return this.sequence.get(this.index)
   }
 
   /**
   * @see Iterator.move
   */
-  public move (iterator : CollectionIterator<Component>) : void {
+  public move (iterator : CollectionIterator<Component<any>>) : void {
     if (iterator instanceof ComponentRepositorySequenceIterator) {
       this.sequence = iterator.sequence
       this.index = iterator.index

@@ -31,7 +31,7 @@ export class EntityComponentSystem {
   public readonly systems : Sequence<System>
   private _systems : Pack<System>
 
-  public readonly components : Sequence<Component>
+  public readonly components : Sequence<Component<any>>
   private _components : StaticComponentRepository
   private _componentsIndex : ComponentIndex
 
@@ -647,7 +647,7 @@ export class EntityComponentSystem {
   *
   * @return The created component.
   */
-  public createComponent <Type extends Component> (entity : number, type : ComponentType<Type>) : Type {
+  public createComponent <Type> (entity : number, type : ComponentType<Type>) : Component<Type> {
     if (!this._entities.has(entity)) {
       throw new Error(
         'Unable to create a component of type ' + type + ' on entity #' +
@@ -684,24 +684,11 @@ export class EntityComponentSystem {
     }
 
     this.willAddComponent(entity, type)
-    const component : Type = this._components.create(entity, type)
+    const component : Component<Type> = this._components.create(entity, type)
     this._componentsIndex.set(entity, identifier, component.identifier)
     this.didAddComponent(component, type)
 
     return component
-  }
-
-  /**
-  * Return the type of a given component.
-  *
-  * @param identifier - Identifier of the component to get.
-  *
-  * @return The type of the given component.
-  */
-  public getTypeOfComponent <Type extends Component> (component : Type) : ComponentType<Type>
-  public getTypeOfComponent (component : number) : ComponentType<any>
-  public getTypeOfComponent <Type extends Component> (component : number | Type ) : ComponentType<any> | ComponentType<Type> {
-    return this._components.getType(component as any)
   }
 
   /**
@@ -711,13 +698,13 @@ export class EntityComponentSystem {
   *
   * @return The instance of the given component.
   */
-  public getComponent (identifier : number) : Component
-  public getComponent <Type extends Component> (identifier : number, type : ComponentType<Type>) : Type
-  public getComponent <Type extends Component> (identifier : number, type? : ComponentType<Type>) : Type | Component {
+  public getComponent (identifier : number) : Component<any>
+  public getComponent <Type> (identifier : number, type : ComponentType<Type>) : Component<Type>
+  public getComponent <Type> (identifier : number, type? : ComponentType<Type>) : Component<any> {
     return this._components.get(identifier, type)
   }
 
-  public getComponentOfEntity <Type extends Component> (entity : Entity, type : ComponentType<Type>) : Type {
+  public getComponentOfEntity <Type> (entity : Entity, type : ComponentType<Type>) : Component<Type> {
     return this._components.get(this._componentsIndex.get(entity, this._types.get(type)), type)
   }
 
@@ -766,7 +753,7 @@ export class EntityComponentSystem {
       )
     }
 
-    const component : Component = this._components.get(
+    const component : Component<any> = this._components.get(
       this._componentsIndex.get(entity, identifier)
     )
 
@@ -789,8 +776,8 @@ export class EntityComponentSystem {
       )
     }
 
-    const instance : Component = this._components.get(component)
-    const type : ComponentType<any> = this._components.getType(component)
+    const instance : Component<any> = this._components.get(component)
+    const type : ComponentType<any> = instance.type
 
     this.willDeleteComponent(instance, type)
     this._componentsIndex.delete(instance.entity, this._types.get(type))
@@ -802,7 +789,7 @@ export class EntityComponentSystem {
   * Remove all components of this entity-component-system.
   */
   public clearComponents () : void {
-    const components : Sequence<Component> = this.components
+    const components : Sequence<Component<any>> = this.components
 
     while (components.size > 0) {
       this.deleteComponentByIdentifier(components.get(0).identifier)
@@ -827,7 +814,7 @@ export class EntityComponentSystem {
   * @param component - The component that was added.
   * @param type - The type of the component that was added.
   */
-  private didAddComponent (component : Component, type : ComponentType<any>) : void {
+  private didAddComponent (component : Component<any>, type : ComponentType<any>) : void {
     for (let index = 0, size = this._systems.size; index < size; ++index) {
       this._systems.get(index).managerDidAddComponent(component, type)
     }
@@ -839,7 +826,7 @@ export class EntityComponentSystem {
   * @param component - The component that will be deleted.
   * @param type - The type of the component that will be deleted.
   */
-  private willDeleteComponent (component : Component, type : ComponentType<any>) : void {
+  private willDeleteComponent (component : Component<any>, type : ComponentType<any>) : void {
     for (let index = 0, size = this._systems.size; index < size; ++index) {
       this._systems.get(index).managerWillDeleteComponent(component, type)
     }
@@ -851,7 +838,7 @@ export class EntityComponentSystem {
   * @param component - The component that was deleted.
   * @param type - The type of the component that was deleted.
   */
-  private didDeleteComponent (component : Component, type : ComponentType<any>) : void {
+  private didDeleteComponent (component : Component<any>, type : ComponentType<any>) : void {
     for (let index = 0, size = this._systems.size; index < size; ++index) {
       this._systems.get(index).managerDidDeleteComponent(component, type)
     }

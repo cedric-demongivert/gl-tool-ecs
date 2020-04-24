@@ -9,8 +9,7 @@ import { ComponentRepository } from './ComponentRepository'
 
 export class StaticComponentRepository implements ComponentRepository {
   private _identifiers : IdentifierSet
-  private _components  : Pack<Component>
-  private _types       : Pack<ComponentType<Component>>
+  private _components  : Pack<Component<any>>
 
   /**
   * Create a new empty static component repository with a given capacity.
@@ -20,7 +19,6 @@ export class StaticComponentRepository implements ComponentRepository {
   public constructor (capacity : number = 2048) {
     this._identifiers = IdentifierSet.allocate(capacity)
     this._components  = Pack.any(capacity)
-    this._types       = Pack.any(capacity)
   }
 
   /**
@@ -45,7 +43,6 @@ export class StaticComponentRepository implements ComponentRepository {
   public reallocate (capacity : number) : void {
     this._components.reallocate(capacity)
     this._identifiers.reallocate(capacity)
-    this._types.reallocate(capacity)
   }
 
   /**
@@ -54,18 +51,16 @@ export class StaticComponentRepository implements ComponentRepository {
   public fit () : void {
     this._identifiers.fit()
     this._components.reallocate(this._identifiers.capacity)
-    this._types.reallocate(this._identifiers.capacity)
   }
 
   /**
   * @see ComponentRepository.create
   */
-  public create <Type extends Component> (entity : number, type : ComponentType<Type>) : Type {
+  public create <Type> (entity : Entity, type : ComponentType<Type>) : Component<Type> {
     const identifier : number = this._identifiers.next()
-    const instance   : Type   = type.instantiate(entity, identifier)
+    const instance   : Component<Type> = new Component(entity, type, identifier)
 
     this._components.set(identifier, instance)
-    this._types.set(identifier, type)
 
     return instance
   }
@@ -74,36 +69,35 @@ export class StaticComponentRepository implements ComponentRepository {
   * @see ComponentRepository.delete
   */
   public delete (identifier : number) : void
-  public delete (component : Component) : void
-  public delete (parameter : number | Component) : void {
+  public delete (component : Component<any>) : void
+  public delete (parameter : number | Component<any>) : void {
     const identifier : number = typeof parameter === 'number' ? parameter : parameter.identifier
 
     this._components.set(identifier, undefined)
-    this._types.set(identifier, undefined)
     this._identifiers.delete(identifier)
   }
 
   /**
   * @see ComponentRepository.getNth
   */
-  public getNth (index : number) : Component {
+  public getNth (index : number) : Component<any> {
     return this._components.get(this._identifiers.get(index))
   }
 
   /**
   * @see ComponentRepository.indexOf
   */
-  public indexOf (component : Component) : number {
+  public indexOf (component : Component<any>) : number {
     return this._identifiers.indexOf(component.identifier)
   }
 
   /**
   * @see ComponentRepository.get
   */
-  public get (identifier : number) : Component
-  public get <Type extends Component> (identifier : number, type : ComponentType<Type>) : Type
-  public get (identifier : number, type? : ComponentType<Component>) : Component {
-    if (type == null || this._types.get(identifier) === type) {
+  public get (identifier : number) : Component<any>
+  public get <Type> (identifier : number, type : ComponentType<Type>) : Component<Type>
+  public get (identifier : number, type? : ComponentType<any>) : Component<any> {
+    if (type == null || this._components.get(identifier).type === type) {
       return this._components.get(identifier)
     } else {
       return undefined
@@ -111,22 +105,11 @@ export class StaticComponentRepository implements ComponentRepository {
   }
 
   /**
-  * @see ComponentRepository.getType
-  */
-  public getType (identifier : number) : ComponentType<any>
-  public getType <Type extends Component> (component : Type) : ComponentType<Type>
-  public getType <Type extends Component> (parameter : number | Type) : ComponentType<Type> | ComponentType<any> {
-    return this._types.get(
-      typeof parameter === 'number' ? parameter : parameter.identifier
-    ) as ComponentType<Type>
-  }
-
-  /**
   * @see ComponentRepository.has
   */
   public has (identifier : number) : boolean
-  public has (component : Component) : boolean
-  public has (parameter : number | Component) : boolean {
+  public has (component : Component<any>) : boolean
+  public has (parameter : number | Component<any>) : boolean {
     return this._identifiers.has(
       typeof parameter === 'number' ? parameter : parameter.identifier
     )
@@ -137,15 +120,14 @@ export class StaticComponentRepository implements ComponentRepository {
 
     for (let index = 0, size = this._identifiers.size; index < size; ++index) {
       const identifier : number = this._identifiers.get(index)
-      const component : Component = this._components.get(identifier)
-      const type : ComponentType<Component> = this._types.get(identifier)
-      const copy : Component = type.instantiate(component.entity, identifier)
+      const component : Component<any> = this._components.get(identifier)
+      const type : ComponentType<any> = component.type
+      const copy : Component<any> = new Component(component.entity, type, identifier)
 
-      type.copy(component, copy)
+      type.copy(component.data, copy.data)
 
       result._identifiers.add(identifier)
       result._components.set(identifier, copy)
-      result._types.set(identifier, type)
     }
 
     return result
@@ -163,7 +145,7 @@ export class StaticComponentRepository implements ComponentRepository {
   /**
   * @see Collection.iterator
   */
-  public * [Symbol.iterator] () : Iterator<Component> {
+  public * [Symbol.iterator] () : Iterator<Component<any>> {
     for (const identifier of this._identifiers) {
       yield this._components.get(identifier)
     }
@@ -184,7 +166,6 @@ export class StaticComponentRepository implements ComponentRepository {
 
         if (
           !other.has(identifier) ||
-          this._types.get(identifier) !== other.getType(identifier) ||
           !this._components.get(identifier).equals(other.get(identifier))
         ) { return false }
       }

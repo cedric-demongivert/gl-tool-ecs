@@ -104,7 +104,7 @@ export class MetaEntity {
   *
   * @return The component of the given type, if exists.
   */
-  public getComponent <Type extends Component> (type : ComponentType<Type>) : Type {
+  public getComponent <Type> (type : ComponentType<Type>) : Component<Type> {
     return this._manager.getComponentOfEntity(this._identifier, type)
   }
 
@@ -115,7 +115,7 @@ export class MetaEntity {
   *
   * @return The created component.
   */
-  public createComponent <Type extends Component> (type : ComponentType<Type>) : Type {
+  public createComponent <Type> (type : ComponentType<Type>) : Component<Type> {
     return this._manager.createComponent(this._identifier, type)
   }
 
