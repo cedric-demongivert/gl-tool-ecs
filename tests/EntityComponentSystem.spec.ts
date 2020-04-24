@@ -1339,7 +1339,6 @@ describe('EntityComponentSystem', function () {
 
     it('throw an error if the component to delete does not exists', function () {
       const ecs : EntityComponentSystem = BUILDER.build()
-      const ComponentTypeA : ComponentType<any> = createComponentType()
 
       expect(_ => ecs.deleteComponentByIdentifier(25)).toThrow()
     })
