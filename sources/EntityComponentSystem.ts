@@ -868,8 +868,8 @@ export class EntityComponentSystem {
   *
   * @return The first system of the given type or fail.
   */
-  public requireSystem (type : Function) : System {
-    const result : System = this.firstSystem(type)
+  public requireSystem <T extends System> (type : (x: T) => x is T) : T {
+    const result : T = this.firstSystem(type)
 
     if (result == null) {
       throw new Error(
@@ -888,14 +888,14 @@ export class EntityComponentSystem {
   *
   * @return The first system of the given type or null.
   */
-  public firstSystem (type : Function) : System {
+  public firstSystem <T extends System> (type : (x: T) => x is T) : T {
     const systems : Pack<System> = this._systems
 
     for (let index = 0, size = systems.size; index < size; ++index) {
       const system : System = this._systems.get(index)
 
       if (system instanceof type) {
-        return system
+        return system as T
       }
     }
 

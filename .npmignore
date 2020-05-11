@@ -1,6 +1,6 @@
 node_modules/
 npm-debug.log
-doc/
+documentation/
 coverage/
 npm-debug.log
 yarn-error.log

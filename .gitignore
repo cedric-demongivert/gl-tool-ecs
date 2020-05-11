@@ -1,6 +1,9 @@
 node_modules
-dist
-doc
+distribution
+documentation
 coverage
 npm-debug.log
 yarn-error.log
+mix-manifest.json
+package-lock.json
+yarn.lock
