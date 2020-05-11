@@ -868,7 +868,7 @@ export class EntityComponentSystem {
   *
   * @return The first system of the given type or fail.
   */
-  public requireSystem <T extends System> (type : (x: T) => x is T) : T {
+  public requireSystem <T extends System> (type : new (...args : any) => T) : T {
     const result : T = this.firstSystem(type)
 
     if (result == null) {
@@ -888,7 +888,7 @@ export class EntityComponentSystem {
   *
   * @return The first system of the given type or null.
   */
-  public firstSystem <T extends System> (type : (x: T) => x is T) : T {
+  public firstSystem <T extends System> (type : new (...args : any) => T) : T {
     const systems : Pack<System> = this._systems
 
     for (let index = 0, size = systems.size; index < size; ++index) {
