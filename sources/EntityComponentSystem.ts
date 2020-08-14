@@ -856,9 +856,17 @@ export class EntityComponentSystem {
       )
     }
 
+    for (const registeredSystem of this._systems) {
+      registeredSystem.managerWillAddSystem(system)
+    }
+
     this._systems.push(system)
     system.attach(this)
     system.initialize()
+
+    for (const registeredSystem of this._systems) {
+      registeredSystem.managerDidAddSystem(system)
+    }
   }
 
   /**
@@ -917,9 +925,17 @@ export class EntityComponentSystem {
       )
     }
 
+    for (const registeredSystem of this._systems) {
+      registeredSystem.managerWillDeleteSystem(system)
+    }
+
     system.destroy()
     this._systems.delete(index)
     system.detach()
+
+    for (const registeredSystem of this._systems) {
+      registeredSystem.managerDidDeleteSystem(system)
+    }
   }
 
   /**

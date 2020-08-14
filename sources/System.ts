@@ -32,6 +32,34 @@ export class System {
   public initialize () : void { }
 
   /**
+  * Called when the parent entity manager will register a new system.
+  *
+  * @param system - The system that will be added.
+  */
+  public managerWillAddSystem (system : System) : void { }
+
+  /**
+  * Called when the parent entity manager did register a new system.
+  *
+  * @param system - The system that was added.
+  */
+  public managerDidAddSystem (system : System) : void { }
+
+  /**
+  * Called when the parent entity manager will delete a registered system.
+  *
+  * @param system - The system that will be deleted.
+  */
+  public managerWillDeleteSystem (system : System) : void { }
+
+  /**
+  * Called when the parent entity manager did delete a registered system.
+  *
+  * @param system - The system that was deleted.
+  */
+  public managerDidDeleteSystem (system : System) : void { }
+
+  /**
   * Called when the parent entity manager will add an entity.
   *
   * @param entity - The identifier of the entity to add.
