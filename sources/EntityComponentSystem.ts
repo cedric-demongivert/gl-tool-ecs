@@ -647,7 +647,7 @@ export class EntityComponentSystem {
   *
   * @return The created component.
   */
-  public createComponent <Type> (entity : number, type : ComponentType<Type>) : Component<Type> {
+  public createComponent <Type> (entity : number, type : ComponentType<Type>, ...parameters : any[]) : Component<Type> {
     if (!this._entities.has(entity)) {
       throw new Error(
         'Unable to create a component of type ' + type + ' on entity #' +
@@ -684,7 +684,7 @@ export class EntityComponentSystem {
     }
 
     this.willAddComponent(entity, type)
-    const component : Component<Type> = this._components.create(entity, type)
+    const component : Component<Type> = this._components.create(entity, type, ...parameters)
     this._componentsIndex.set(entity, identifier, component.identifier)
     this.didAddComponent(component)
 

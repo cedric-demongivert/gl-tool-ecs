@@ -29,11 +29,11 @@ export class Component<Data> {
   * @param type - Type of component to instantiate.
   * @param identifier - Unique number associated to this new component.
   */
-  public constructor (entity : Entity, type : ComponentType<Data>, identifier : number) {
+  public constructor (entity : Entity, type : ComponentType<Data>, identifier : number, ...parameters : any[]) {
     this.type = type
     this.identifier = identifier
     this.entity = entity
-    this.data = type.instantiate()
+    this.data = this.type.instantiate(...parameters)
   }
 
   /**

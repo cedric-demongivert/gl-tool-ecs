@@ -56,9 +56,9 @@ export class StaticComponentRepository implements ComponentRepository {
   /**
   * @see ComponentRepository.create
   */
-  public create <Type> (entity : Entity, type : ComponentType<Type>) : Component<Type> {
+  public create <Type> (entity : Entity, type : ComponentType<Type>, ...parameters : any[]) : Component<Type> {
     const identifier : number = this._identifiers.next()
-    const instance   : Component<Type> = new Component(entity, type, identifier)
+    const instance   : Component<Type> = new Component(entity, type, identifier, ...parameters)
 
     this._components.set(identifier, instance)
 

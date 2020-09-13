@@ -7,7 +7,7 @@ export interface ComponentType<Type> {
   *
   * @return A new data object stored by a component of this type.
   */
-  instantiate () : Type
+  instantiate (...parameters : any[]) : Type
 
   /**
   * Copy the state of an instance of this type into another one.

@@ -16,7 +16,7 @@ export interface ComponentRepository {
   *
   * @return The new component instance.
   */
-  create <Type> (entity : number, type : ComponentType<Type>) : Component<Type>
+  create <Type> (entity : number, type : ComponentType<Type>, ...parameters : any[]) : Component<Type>
 
   /**
   * Remove the component with the given identifier from this collection.

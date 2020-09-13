@@ -115,8 +115,8 @@ export class MetaEntity {
   *
   * @return The created component.
   */
-  public createComponent <Type> (type : ComponentType<Type>) : Component<Type> {
-    return this._manager.createComponent(this._identifier, type)
+  public createComponent <Type> (type : ComponentType<Type>, ...parameters : any[]) : Component<Type> {
+    return this._manager.createComponent(this._identifier, type, ...parameters)
   }
 
   /**
