@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-ecs",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Entity component system of the gl-tool suit.",
   "main": "./sources/index.js",
   "types": "./types/index.d.ts",
@@ -11,9 +11,8 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "preversion": "npm install && npm test",
     "version": "npm run build && git add --all",
-    "postversion": "git push && git push --tags",
-    "documentation": "typedoc",
-    "publish": "npm publish ./distribution --access public"
+    "postversion": "git push && git push --tags && npm publish ./distribution --access public",
+    "documentation": "typedoc"
   },
   "repository": "https://gitlab.cedric-demongivert.com/gl-tool/gl-tool-ecs.git",
   "author": "Cédric DEMONGIVERT <cedric.demongivert@gmail.com>",
