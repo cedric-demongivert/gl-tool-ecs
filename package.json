@@ -12,7 +12,8 @@
     "preversion": "npm install && npm test",
     "version": "npm run build && git add --all",
     "postversion": "git push && git push --tags",
-    "documentation": "typedoc"
+    "documentation": "typedoc",
+    "publish": "npm publish ./distribution --access public"
   },
   "repository": "https://gitlab.cedric-demongivert.com/gl-tool/gl-tool-ecs.git",
   "author": "Cédric DEMONGIVERT <cedric.demongivert@gmail.com>",
