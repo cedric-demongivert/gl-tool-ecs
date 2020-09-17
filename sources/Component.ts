@@ -50,3 +50,9 @@ export class Component<Data> {
     return false
   }
 }
+
+export namespace Component {
+  export function equals (left : Component<any> | null | undefined, right : Component<any> | null | undefined) : boolean {
+    return left == null ? left === right : left.equals(right)
+  }
+}
