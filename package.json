@@ -1,38 +1,40 @@
 {
   "name": "@cedric-demongivert/gl-tool-ecs",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Entity component system of the gl-tool suit.",
   "main": "./sources/index.js",
   "types": "./types/index.d.ts",
   "browserslist": "> 0.25%, not dead",
   "scripts": {
     "test": "jest --coverage",
-    "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "preversion": "npm install && npm test",
-    "version": "npm run build && git add --all",
-    "postversion": "git push && git push --tags && npm publish ./distribution --access public",
-    "documentation": "typedoc"
+    "build": "typedoc && cross-env npx mix",
+    "preversion": "npm install",
+    "version": "npm run build && npm test && git add --all",
+    "postversion": "git push && git push --tags",
+    "push": "yarn run build && npm publish ./distribution --access public",
+    "patch": "yarn version --patch && npm run publish",
+    "minor": "yarn version --minor && npm run publish",
+    "major": "yarn version --major && npm run publish"
   },
   "repository": "https://gitlab.cedric-demongivert.com/gl-tool/gl-tool-ecs.git",
   "author": "Cédric DEMONGIVERT <cedric.demongivert@gmail.com>",
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/preset-env": "^7.4.5",
-    "@types/jest": "^24.0.12",
-    "@types/node": "^12.0.0",
-    "cross-env": "^5.2.0",
-    "jest": "^24.7.1",
-    "laravel-mix": "^4.0.15",
-    "ts-jest": "^24.0.2",
-    "ts-loader": "^6.0.2",
-    "typedoc": "^0.14.2",
-    "typedoc-webpack-plugin": "^1.1.4",
-    "webpack": "^4.33.0"
+    "@babel/core": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.4",
+    "cross-env": "^7.0.3",
+    "jest": "^27.4.5",
+    "laravel-mix": "^6.0.39",
+    "ts-jest": "^27.1.2",
+    "ts-loader": "^9.2.6",
+    "typedoc": "^0.22.10",
+    "typescript": "^4.5.4",
+    "webpack": "^5.65.0"
   },
   "dependencies": {
-    "@cedric-demongivert/gl-tool-collection": "^0.20.3"
+    "@cedric-demongivert/gl-tool-collection": "^0.25.2"
   }
 }

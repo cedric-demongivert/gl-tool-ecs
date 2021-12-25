@@ -1,8 +1,6 @@
 {
-  "inputFiles": ["./sources"],
-  "mode": "file",
+  "entryPoints": ["./sources"],
   "out": "./distribution/documentation",
   "readme": "none",
-  "excludePrivate": true,
-  "excludeNotExported": true
+  "excludePrivate": true
 }
